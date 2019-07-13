@@ -1,0 +1,6 @@
+{
+  "HelloWorld": "French HelloWorld",
+  "user.register.success": "French register success",
+  "user.register.username.error": "French username error",
+  "\"cnfpassword\" must be one of [ref:password]": "\"cnfpassword\" must be one of [ref:password]"
+}

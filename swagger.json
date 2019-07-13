@@ -1,0 +1,23 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "A Simple IP Address API",
+    "title": "ipify",
+    "version": "v1"
+  },
+  "host": "api.ipify.org",
+  "schemes": ["http"],
+  "basePath": "/",
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Get hello world",
+        "responses": {
+          "200": {
+            "description": "Success response"
+          }
+        }
+      }
+    }
+  }
+}

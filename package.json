@@ -1,0 +1,46 @@
+{
+  "name": "css-nodeserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format:prettier:check": "./node_modules/.bin/prettier --config ./.prettierrc --list-different './**/*.{js,json,css}' -l",
+    "format:prettier:fix": "./node_modules/.bin/prettier --config ./.prettierrc --list-different './**/*.{js,json,css}' --write",
+    "lint": "./node_modules/.bin/eslint './**/*.js'",
+    "lint:fix": "./node_modules/.bin/eslint './**/*.js' --fix",
+    "start_env": "node -r dotenv/config server.js",
+    "startdev": "./node_modules/.bin/nodemon --inspect -r dotenv/config server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^15.1.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "i18n": "^0.8.3",
+    "morgan": "^1.9.1",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.10.0",
+    "swagger-ui-express": "^4.0.7",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "dotenv": "^8.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.2",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format:prettier:check && npm run lint"
+    }
+  }
+}

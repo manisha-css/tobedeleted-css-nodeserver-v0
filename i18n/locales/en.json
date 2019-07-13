@@ -1,0 +1,6 @@
+{
+  "HelloWorld": "Engish HelloWorld",
+  "user.register.success": "User Registered Successfully",
+  "user.register.username.error": "User register error from i18n",
+  "{HelloWorld}": "{HelloWorld}"
+}
