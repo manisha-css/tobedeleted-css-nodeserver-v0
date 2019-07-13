@@ -49,8 +49,8 @@ server.use(
 server.use(morgan('combined', { stream: httplogger.stream }));
 
 server.get('/', (req, res) => {
-  const greetings = ['HelloWorld'];
-  res.send(res.__(greetings[0]));
+  const greeting = ['HelloWorld'];
+  res.send(res.translate(greeting));
 });
 
 server.get('/healthcheck', (req, res) => {

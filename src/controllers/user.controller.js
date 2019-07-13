@@ -13,10 +13,10 @@ exports.createUserAndSendEmail = async (req, res) => {
   // Return result.
   Joi.validate(reqUserObj, userSchemaInsertValidation, (error, value) => {
     if (error) {
-      const infoResponseError = new InfoResponse(res.__(error.details[0].message));
+      const infoResponseError = new InfoResponse(res.translate(error.details[0].message));
       res.status(400).json(infoResponseError);
     } else {
-      const infoResponse = new InfoResponse(res.__('user.register.success'));
+      const infoResponse = new InfoResponse(res.translate('user.register.success'));
       logger.info('Inside User API');
       logger.info(`value: ${value}`);
       res.status(200).json(infoResponse);
