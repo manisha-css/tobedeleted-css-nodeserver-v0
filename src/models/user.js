@@ -1,39 +1,14 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../shared/dbConfig');
-
-const UserSchema = sequelize.define(
-  'user',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    givenname: {
-      type: Sequelize.STRING
-    },
-    username: {
-      type: Sequelize.STRING
-    },
-    password: {
-      type: Sequelize.STRING
-    },
-    verification_code: {
-      type: Sequelize.INTEGER
-    },
-    status: {
-      type: Sequelize.ENUM,
-      values: ['active', 'inactive', 'deleted']
-    },
-    public_profile: {
-      type: Sequelize.STRING
-    },
-    is_deleted: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false
-    }
-  },
-  { freezeTableName: true, updatedAt: 'modified_date', createdAt: 'creation_date' }
-);
-
-module.exports = UserSchema;
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+    givenname: DataTypes.STRING,
+    username: DataTypes.STRING,
+    password: DataTypes.STRING,
+    verification_code: DataTypes.STRING,
+    accountLocked: DataTypes.BOOLEAN,
+    public_profile: DataTypes.STRING
+  });
+  User.associate = function(models) {
+    // associations can be defined here
+  };
+  return User;
+};

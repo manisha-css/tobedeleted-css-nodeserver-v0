@@ -1,6 +1,9 @@
 {
-  "HelloWorld": "French HelloWorld",
-  "user.register.success": "French register success",
-  "user.register.username.error": "French username error",
-  "\"cnfpassword\" must be one of [ref:password]": "\"cnfpassword\" must be one of [ref:password]"
+	"HelloWorld": "French HelloWorld",
+	"user.register.success": "French register success",
+	"user.register.username.error": "French username error",
+	"\"cnfpassword\" must be one of [ref:password]": "\"cnfpassword\" must be one of [ref:password]",
+	"user.username.exists": "user.username.exists",
+	"user.userpassword.bcrypt.error": "user.userpassword.bcrypt.error",
+	"user.register.error": "user.register.error"
 }
