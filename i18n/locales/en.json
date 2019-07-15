@@ -1,6 +1,9 @@
 {
   "HelloWorld": "Engish HelloWorld",
+  "user.register.validation.error": "Validation error for user",
+  "user.username.exists": "user.username.exists",
+  "user.userpassword.bcrypt.error": "user.userpassword.bcrypt.error",
+  "user.register.error": "user.register.error",
   "user.register.success": "User Registered Successfully",
-  "user.register.username.error": "User register error from i18n",
-  "{HelloWorld}": "{HelloWorld}"
+  "user.register.success.noemail": "French register success but no email"
 }

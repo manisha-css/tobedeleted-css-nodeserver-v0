@@ -12,7 +12,7 @@ exports.validateInsert = (req, res, next) => {
   // Return result.
   Joi.validate(reqUserObj, userSchemaInsertValidation, (error, value) => {
     if (error) {
-      const infoResponseError = new InfoResponse(res.translate(error.details[0].message));
+      const infoResponseError = new InfoResponse(res.translate('user.register.validation.error') + error.details[0].message);
       res.status(400).json(infoResponseError);
     } else if (value) {
       next();

@@ -2,14 +2,16 @@ const bcrypt = require('bcrypt');
 const db = require('../models/index');
 const InfoResponse = require('../dto/inforesponse');
 const CONSTANTS = require('../shared/constants');
+const logger = require('../shared/logger.js');
+const nodemailer = require('../shared/nodemailer');
 
 const { User } = db.sequelize.models;
+const { UserRole } = db.sequelize.models;
 
 exports.createUserAndSendEmail = async (req, res) => {
   const reqUserObj = {};
   reqUserObj.username = req.body.username;
   reqUserObj.givenname = req.body.givenname;
-  // User.password = req.body.password;
 
   const user = await User.findOne({ where: { username: req.body.username } });
 
@@ -32,13 +34,40 @@ exports.createUserAndSendEmail = async (req, res) => {
     reqUserObj.accountLocked = true;
     reqUserObj.public_profile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
 
+    // db.transaction(txn => {
+    //   return User.create(reqUserObj, { transaction: txn }).then(dbuser => {
+    //     return dbuser.setRoles([{ role: 'USER' }], { transaction: txn });
+    //   });
+    // });
+
     // Save to MySQL database
-    User.create(reqUserObj).then(
-      () => {
-        infoResponse = new InfoResponse(res.translate('user.register.success'));
-        res.status(200).json(infoResponse);
+    User.create(
+      reqUserObj
+      //   , {
+      //   include: [{ model: UserRole, as: 'roles' }]
+      // }
+    ).then(
+      result => {
+        logger.debug(`user created ${result}`);
+        // send email
+        const params = {
+          givenname: reqUserObj.givenname
+        };
+        nodemailer(reqUserObj.username, 'createuser', params).then(
+          emailresult => {
+            infoResponse = new InfoResponse(res.translate('user.register.success'));
+            logger.debug(`email success${emailresult}`);
+            res.status(200).json(infoResponse);
+          },
+          emailerr => {
+            infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
+            logger.error(`eroro${emailerr}`);
+            res.status(200).json(infoResponse);
+          }
+        );
       },
-      () => {
+      dberr => {
+        logger.error(`dberr: ${dberr}`);
         infoResponse = new InfoResponse(res.translate('user.register.error'));
         res.status(500).json(infoResponse);
       }

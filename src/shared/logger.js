@@ -1,5 +1,4 @@
 const winston = require('winston');
-const { NODE_ENV } = require('../shared/envconfig');
 
 // instantiate a new Winston Logger with the settings defined above
 const logger = winston.createLogger({
@@ -18,7 +17,7 @@ const logger = winston.createLogger({
   ]
 });
 
-if (NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
       level: 'debug',

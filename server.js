@@ -10,9 +10,6 @@ const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./swagger.json');
 const userRoutes = require('./src/routes/user.routes');
 
-// env
-const { PORT } = require('./src/shared/envconfig');
-
 const server = express();
 
 // allow options
@@ -61,6 +58,6 @@ server.get('/healthcheck', (req, res) => {
 
 userRoutes.userRoutes(server);
 
-server.listen(PORT, () => {
-  logger.info(`Node App started on port: ${PORT}`);
+server.listen(process.env.PORT, () => {
+  logger.info(`Node App started on port: ${process.env.PORT}`);
 });
