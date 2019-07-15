@@ -2,18 +2,19 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
     {
-      id: { type: DataTypes.BIGINT, primaryKey: true },
       givenname: DataTypes.STRING,
       username: DataTypes.STRING,
       password: DataTypes.STRING,
-      verification_code: DataTypes.STRING,
+      verificationCode: DataTypes.STRING,
       accountLocked: DataTypes.BOOLEAN,
-      public_profile: DataTypes.STRING
+      publicProfile: DataTypes.STRING
     },
-    {}
+    {
+      underscored: true
+    }
   );
   User.associate = models => {
-    User.hasMany(models.UserRole, { as: 'userroles' });
+    User.hasMany(models.UserRole, { foreignKey: 'user_id', as: 'roles' });
   };
 
   return User;

@@ -2,13 +2,16 @@ module.exports = (sequelize, DataTypes) => {
   const UserRole = sequelize.define(
     'UserRole',
     {
-      id: { type: DataTypes.BIGINT, primaryKey: true },
       role: DataTypes.STRING
     },
-    {}
+    { underscored: true }
   );
   UserRole.associate = models => {
-    UserRole.belongsTo(models.User, { foreignKey: 'userid', as: 'user' });
+    UserRole.belongsTo(models.User, {
+      foreignKey: 'user_id'
+    });
   };
+  UserRole.removeAttribute('id');
+
   return UserRole;
 };

@@ -5,7 +5,16 @@
     "database": "cssnode",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "operatorsAliases": false
+    "logging": true,
+    "operatorsAliases": false,
+    "define": {
+      "underscored": true
+    },
+    "pool": {
+      "max": 5,
+      "idle": 30000,
+      "acquire": 60000
+    }
   },
   "test": {
     "username": "root",
@@ -13,7 +22,15 @@
     "database": "database_test",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "operatorsAliases": false
+    "operatorsAliases": false,
+    "define": {
+      "underscored": true
+    },
+    "pool": {
+      "max": 5,
+      "idle": 30000,
+      "acquire": 60000
+    }
   },
   "production": {
     "username": "root",
@@ -21,6 +38,14 @@
     "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "operatorsAliases": false
+    "operatorsAliases": false,
+    "define": {
+      "underscored": true
+    },
+    "pool": {
+      "max": 5,
+      "idle": 30000,
+      "acquire": 60000
+    }
   }
 }

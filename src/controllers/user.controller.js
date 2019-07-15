@@ -30,25 +30,23 @@ exports.createUserAndSendEmail = async (req, res) => {
     reqUserObj.password = hash;
 
     // set verification code with 5 digit number
-    reqUserObj.verification_code = Math.floor(10000 + Math.random() * 90000);
+    reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
     reqUserObj.accountLocked = true;
-    reqUserObj.public_profile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
+    reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
+    reqUserObj.roles = [{ role: 'USER' }];
 
-    // db.transaction(txn => {
-    //   return User.create(reqUserObj, { transaction: txn }).then(dbuser => {
-    //     return dbuser.setRoles([{ role: 'USER' }], { transaction: txn });
-    //   });
-    // });
-
-    // Save to MySQL database
-    User.create(
-      reqUserObj
-      //   , {
-      //   include: [{ model: UserRole, as: 'roles' }]
-      // }
-    ).then(
-      result => {
-        logger.debug(`user created ${result}`);
+    User.create(reqUserObj, {
+      include: [{ model: UserRole, as: 'roles' }]
+    }).then(
+      // Save to MySQL database
+      // User.create(reqUserObj).then(
+      //   result => {
+      //     logger.debug(`=======user created ${JSON.stringify(result)}=========`);
+      //     UserRole.create({
+      //       role: 'USER',
+      //       user_id: result.id
+      //     }).then(
+      () => {
         // send email
         const params = {
           givenname: reqUserObj.givenname
@@ -66,8 +64,15 @@ exports.createUserAndSendEmail = async (req, res) => {
           }
         );
       },
+      //   dbroleerr => {
+      //     logger.error(`-----dbroleerr: ${dbroleerr}`);
+      //     infoResponse = new InfoResponse(res.translate('user.register.error'));
+      //     res.status(500).json(infoResponse);
+      //   }
+      // );
+      // },
       dberr => {
-        logger.error(`dberr: ${dberr}`);
+        logger.error(`----dberr: ${dberr}`);
         infoResponse = new InfoResponse(res.translate('user.register.error'));
         res.status(500).json(infoResponse);
       }
