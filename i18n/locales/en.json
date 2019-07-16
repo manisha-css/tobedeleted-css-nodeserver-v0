@@ -1,9 +1,15 @@
 {
-  "HelloWorld": "Engish HelloWorld",
-  "user.register.validation.error": "Validation error for user",
-  "user.username.exists": "user.username.exists",
-  "user.userpassword.bcrypt.error": "user.userpassword.bcrypt.error",
-  "user.register.error": "user.register.error",
-  "user.register.success": "User Registered Successfully",
-  "user.register.success.noemail": "French register success but no email"
+	"HelloWorld": "Engish HelloWorld",
+	"user.register.validation.error": "Validation error for user",
+	"user.username.exists": "user.username.exists",
+	"user.userpassword.bcrypt.error": "user.userpassword.bcrypt.error",
+	"user.register.error": "user.register.error",
+	"user.register.success": "User Registered Successfully",
+	"user.register.success.noemail": "French register success but no email",
+	"user.login.success": "user.login.success",
+	"user.login.username.error": "user.login.username.error",
+	"user.login.sucess": "user.login.sucess",
+	"auth.header.error": "auth.header.error",
+	"auth.token.error": "auth.token.error",
+	"user.myprofile.success": "user.myprofile.success"
 }

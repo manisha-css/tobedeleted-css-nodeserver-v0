@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const db = require('../models/index');
 const InfoResponse = require('../dto/inforesponse');
 const CONSTANTS = require('../shared/constants');
@@ -8,7 +9,7 @@ const nodemailer = require('../shared/nodemailer');
 const { User } = db.sequelize.models;
 const { UserRole } = db.sequelize.models;
 
-exports.createUserAndSendEmail = async (req, res) => {
+const createUserAndSendEmail = async (req, res) => {
   const reqUserObj = {};
   reqUserObj.username = req.body.username;
   reqUserObj.givenname = req.body.givenname;
@@ -79,3 +80,40 @@ exports.createUserAndSendEmail = async (req, res) => {
     );
   });
 };
+
+const authenticateUser = async (req, res) => {
+  let infoResponse;
+  let status;
+  const user = await User.findOne({ where: { username: req.body.username } });
+
+  if (user) {
+    console.log('user' + user.id);
+    // match the password
+    const match = await bcrypt.compare(req.body.password, user.password);
+    if (match) {
+      // Create a token
+      const payload = { username: user.username };
+      const options = { expiresIn: '2d', issuer: 'css' };
+      const secret = process.env.JWT_SECRET_KEY;
+      const token = jwt.sign(payload, secret, options);
+      status = 200;
+      console.log('token ------- ' + token);
+      infoResponse = new InfoResponse(res.translate('user.login.sucess'));
+      infoResponse.result = token;
+    } else {
+      status = 401;
+      infoResponse = new InfoResponse(res.translate('user.login.unauth'));
+    }
+    res.status(status).json(infoResponse);
+  } else {
+    infoResponse = new InfoResponse(res.translate('user.login.username.error'));
+    res.status(200).json(infoResponse);
+  }
+};
+
+const updateMyProfile = async (req, res) => {
+  const infoResponse = new InfoResponse(res.translate('user.myprofile.success'));
+  res.status(200).json(infoResponse);
+};
+
+module.exports = { createUserAndSendEmail, authenticateUser, updateMyProfile };
