@@ -10,7 +10,8 @@
     "lint": "./node_modules/.bin/eslint './**/*.js'",
     "lint:fix": "./node_modules/.bin/eslint './**/*.js' --fix",
     "start_env": "node -r dotenv/config server.js",
-    "startdev": "./node_modules/.bin/nodemon --inspect -r dotenv/config server.js"
+    "startdev": "./node_modules/.bin/nodemon --inspect -r dotenv/config server.js",
+    "startidedebug": "./node_modules/.bin/nodemon  -r dotenv/config server.js"
   },
   "author": "",
   "license": "ISC",

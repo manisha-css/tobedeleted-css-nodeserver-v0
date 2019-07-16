@@ -84,20 +84,28 @@ const createUserAndSendEmail = async (req, res) => {
 const authenticateUser = async (req, res) => {
   let infoResponse;
   let status;
-  const user = await User.findOne({ where: { username: req.body.username } });
+  const user = await User.findOne({ where: { username: req.body.username }, include: [{ model: UserRole, as: 'roles' }] });
 
   if (user) {
-    console.log('user' + user.id);
+    logger.debug(`user${user.id}`);
     // match the password
     const match = await bcrypt.compare(req.body.password, user.password);
     if (match) {
       // Create a token
-      const payload = { username: user.username };
+      // get roles as a simple array first
+      const userroles = [];
+      for (let i = 0; i < user.roles.length; i += 1) {
+        const userrole = user.roles[i];
+        logger.debug(userrole);
+        userroles.push(userrole.role);
+      }
+      logger.debug(userroles);
+      const payload = { username: user.username, roles: userroles };
       const options = { expiresIn: '2d', issuer: 'css' };
       const secret = process.env.JWT_SECRET_KEY;
       const token = jwt.sign(payload, secret, options);
       status = 200;
-      console.log('token ------- ' + token);
+      logger.debug(`token ------- ${token}`);
       infoResponse = new InfoResponse(res.translate('user.login.sucess'));
       infoResponse.result = token;
     } else {

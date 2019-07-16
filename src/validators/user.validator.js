@@ -11,7 +11,7 @@ const validateInsert = (req, res, next) => {
 
   Joi.validate(reqUserObj, userValidator.insertValidator, (error, value) => {
     if (error) {
-      const infoResponseError = new InfoResponse(res.translate('user.register.validation.error') + error.details[0].message);
+      const infoResponseError = new InfoResponse(res.translate('user.validation.error') + error.details[0].message);
       res.status(400).json(infoResponseError);
     } else if (value) {
       next();
@@ -23,10 +23,9 @@ const validateLogin = (req, res, next) => {
   const reqUserObj = {};
   reqUserObj.username = req.body.username;
   reqUserObj.password = req.body.password;
-  console.log('inside validation');
   Joi.validate(reqUserObj, userValidator.loginValidator, (error, value) => {
     if (error) {
-      const infoResponseError = new InfoResponse(res.translate('user.login.validation.error') + error.details[0].message);
+      const infoResponseError = new InfoResponse(res.translate('user.validation.error') + error.details[0].message);
       res.status(400).json(infoResponseError);
     } else if (value) {
       next();

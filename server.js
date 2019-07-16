@@ -9,6 +9,7 @@ const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./swagger.json');
 const userRoutes = require('./src/routes/user.routes');
+const errorHandler = require('./src/shared/error-handler');
 
 const server = express();
 
@@ -45,18 +46,31 @@ server.use(
 // below will add to winston httplogger
 server.use(morgan('combined', { stream: httplogger.stream }));
 
-server.get('/', (req, res) => {
-  const greeting = ['HelloWorld'];
-  res.send(res.translate(greeting));
-});
+server.get(
+  '/',
+  errorHandler.wrapAsync(async (req, res) => {
+    const greeting = 'HelloWorld';
+    res.send(res.translate(greeting));
+  })
+);
 
-server.get('/healthcheck', (req, res) => {
-  res.json({
-    message: 'Healthcheck is successfull'
-  });
-});
+server.get(
+  '/healthcheck',
+  errorHandler.wrapAsync(async (req, res) => {
+    res.json({
+      message: 'Healthcheck is successfull'
+    });
+  })
+);
 
 userRoutes.userRoutes(server);
+
+// below needs to be at the end of all routes
+server.use((error, req, res, next) => {
+  res.json({ message: error.message });
+  // pass it to express to handle it
+  next(error);
+});
 
 server.listen(process.env.PORT, () => {
   logger.info(`Node App started on port: ${process.env.PORT}`);

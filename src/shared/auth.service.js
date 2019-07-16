@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const InfoResponse = require('../dto/inforesponse');
+const rolebasedAccess = require('./rolebased-acess');
+const logger = require('../shared/logger.js');
 
 const validateAuthToken = (req, res, next) => {
   const authorizationHeaader = req.headers.authorization;
@@ -18,10 +20,35 @@ const validateAuthToken = (req, res, next) => {
 
       // Let's pass back the decoded token to the request object
       req.decoded = result;
-      // We call next to pass execution to the subsequent middleware
-      next();
+      // check ALL first
+      const allRolePaths = rolebasedAccess.ALL;
+      for (let i = 0; i < allRolePaths.length; i += 1) {
+        const allRolePath = allRolePaths[i];
+        // check if it included /**/*
+        const regx = new RegExp(allRolePath);
+        logger.debug(regx.test(req.originalUrl));
+        if (regx.test(req.originalUrl)) {
+          next();
+          return;
+        }
+      }
+      for (let j = 0; j < req.decoded.roles.length; j += 1) {
+        const userrole = req.decoded.roles[j];
+        const userRolePaths = rolebasedAccess[userrole];
+        for (let k = 0; k < userRolePaths.length; k += 1) {
+          const userRolePath = userRolePaths[k];
+          const regx = new RegExp(userRolePath);
+          logger.debug(regx.test(req.originalUrl));
+          if (regx.test(req.originalUrl)) {
+            next();
+            return;
+          }
+        }
+      }
+      // no authorization for given url
+      infoResponse = new InfoResponse(res.translate('auth.token.error'));
+      res.status(401).send(infoResponse);
     } catch (err) {
-      console.log('err --' + err);
       // Throw an error just in case anything goes wrong with verification
       infoResponse = new InfoResponse(res.translate('auth.token.error'));
       res.status(401).send(infoResponse);
