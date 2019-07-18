@@ -32,4 +32,8 @@ const loginValidator = Joi.object().keys({
   password: Joi.string().required()
 });
 
-module.exports = { insertValidator, loginValidator };
+const userNameValidator = Joi.object().keys({
+  username: usernameKey
+});
+
+module.exports = { insertValidator, loginValidator, userNameValidator };

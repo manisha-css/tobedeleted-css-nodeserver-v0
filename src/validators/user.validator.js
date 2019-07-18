@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi');
-const userValidator = require('./user.validator.schema');
+const userValidatorSchema = require('./user.validator.schema');
 const InfoResponse = require('../dto/inforesponse');
 
 const validateInsert = (req, res, next) => {
@@ -9,7 +9,7 @@ const validateInsert = (req, res, next) => {
   reqUserObj.password = req.body.password;
   reqUserObj.cnfpassword = req.body.cnfpassword;
 
-  Joi.validate(reqUserObj, userValidator.insertValidator, (error, value) => {
+  Joi.validate(reqUserObj, userValidatorSchema.insertValidator, (error, value) => {
     if (error) {
       const infoResponseError = new InfoResponse(res.translate('user.validation.error') + error.details[0].message);
       res.status(400).json(infoResponseError);
@@ -23,7 +23,7 @@ const validateLogin = (req, res, next) => {
   const reqUserObj = {};
   reqUserObj.username = req.body.username;
   reqUserObj.password = req.body.password;
-  Joi.validate(reqUserObj, userValidator.loginValidator, (error, value) => {
+  Joi.validate(reqUserObj, userValidatorSchema.loginValidator, (error, value) => {
     if (error) {
       const infoResponseError = new InfoResponse(res.translate('user.validation.error') + error.details[0].message);
       res.status(400).json(infoResponseError);
@@ -33,4 +33,15 @@ const validateLogin = (req, res, next) => {
   });
 };
 
-module.exports = { validateInsert, validateLogin };
+const validateUsername = (req, res, next) => {
+  Joi.validate(req.body, userValidatorSchema.userNameValidator, (error, value) => {
+    if (error) {
+      const infoResponseError = new InfoResponse(res.translate('username.validation.error') + error.details[0].message);
+      res.status(400).json(infoResponseError);
+    } else if (value) {
+      next();
+    }
+  });
+};
+
+module.exports = { validateInsert, validateLogin, validateUsername };

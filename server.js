@@ -9,6 +9,8 @@ const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./swagger.json');
 const userRoutes = require('./src/routes/user.routes');
+const contactusRoutes = require('./src/routes/contactus.routes');
+
 const errorHandler = require('./src/shared/error-handler');
 
 const server = express();
@@ -64,7 +66,7 @@ server.get(
 );
 
 userRoutes.userRoutes(server);
-
+contactusRoutes.contactusRoutes(server);
 // below needs to be at the end of all routes
 server.use((error, req, res, next) => {
   res.json({ message: error.message });

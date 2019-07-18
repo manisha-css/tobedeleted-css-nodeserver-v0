@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const RandExp = require('randexp');
 const db = require('../models/index');
 const InfoResponse = require('../dto/inforesponse');
 const CONSTANTS = require('../shared/constants');
@@ -22,11 +23,10 @@ const createUserAndSendEmail = async (req, res) => {
     res.status(409).json(infoResponse);
     return;
   }
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
+
+  bcrypt.hash(req.body.password, 10, async (err, hash) => {
     if (err) {
-      infoResponse = new InfoResponse(res.translate('user.userpassword.bcrypt.error'));
-      res.status(500).json(infoResponse);
-      return;
+      throw err;
     }
     reqUserObj.password = hash;
 
@@ -36,46 +36,68 @@ const createUserAndSendEmail = async (req, res) => {
     reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
     reqUserObj.roles = [{ role: 'USER' }];
 
-    User.create(reqUserObj, {
-      include: [{ model: UserRole, as: 'roles' }]
-    }).then(
-      // Save to MySQL database
-      // User.create(reqUserObj).then(
-      //   result => {
-      //     logger.debug(`=======user created ${JSON.stringify(result)}=========`);
-      //     UserRole.create({
-      //       role: 'USER',
-      //       user_id: result.id
-      //     }).then(
-      () => {
-        // send email
-        const params = {
-          givenname: reqUserObj.givenname
-        };
-        nodemailer(reqUserObj.username, 'createuser', params).then(
-          emailresult => {
-            infoResponse = new InfoResponse(res.translate('user.register.success'));
-            logger.debug(`email success${emailresult}`);
-            res.status(200).json(infoResponse);
+    try {
+      // Result is whatever you returned inside the transaction
+      const result = await db.sequelize.transaction(async txn => {
+        // step 1
+        const dbuser = await User.create(reqUserObj, { transaction: txn });
+
+        // step 2
+        return await UserRole.create(
+          {
+            user_id: dbuser.id,
+            role: 'USER'
           },
-          emailerr => {
-            infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
-            logger.error(`eroro${emailerr}`);
-            res.status(200).json(infoResponse);
-          }
+          { transaction: txn }
         );
+      });
+
+      // In this case, an instance of Model
+      console.log(result);
+    } catch (dberr) {
+      // Rollback transaction if any errors were encountered
+      console.log(dberr);
+      infoResponse = new InfoResponse(res.translate('user.register.error'));
+      res.status(500).json(infoResponse);
+      return;
+    }
+
+    // const txn = await db.sequelize.transaction();
+    // try {
+    //   // get transaction
+    //   // await User.create(reqUserObj, { include: [{ model: UserRole, as: 'roles' }] });
+    //   const dbuser = await User.create(reqUserObj, { transaction: txn });
+    //   await UserRole.create(
+    //     {
+    //       user_id: dbuser.id,
+    //       role: 'USER'
+    //     },
+    //     { transaction: txn }
+    //   );
+    //   await txn.commit();
+    // } catch (dberr) {
+    //   logger.error(`----${dberr}`);
+    //   // Rollback transaction if any errors were encountered
+    //   await txn.rollback();
+    //   infoResponse = new InfoResponse(res.translate('user.register.error'));
+    //   res.status(500).json(infoResponse);
+    //   return;
+    // }
+
+    // send email
+    const params = {
+      givenname: reqUserObj.givenname
+    };
+    nodemailer(reqUserObj.username, 'createuser', params).then(
+      emailresult => {
+        infoResponse = new InfoResponse(res.translate('user.register.success'));
+        logger.debug(`email success${emailresult}`);
+        res.status(200).json(infoResponse);
       },
-      //   dbroleerr => {
-      //     logger.error(`-----dbroleerr: ${dbroleerr}`);
-      //     infoResponse = new InfoResponse(res.translate('user.register.error'));
-      //     res.status(500).json(infoResponse);
-      //   }
-      // );
-      // },
-      dberr => {
-        logger.error(`----dberr: ${dberr}`);
-        infoResponse = new InfoResponse(res.translate('user.register.error'));
-        res.status(500).json(infoResponse);
+      emailerr => {
+        infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
+        logger.error(`eroro${emailerr}`);
+        res.status(200).json(infoResponse);
       }
     );
   });
@@ -119,9 +141,84 @@ const authenticateUser = async (req, res) => {
   }
 };
 
-const updateMyProfile = async (req, res) => {
-  const infoResponse = new InfoResponse(res.translate('user.myprofile.success'));
+const forgetPassword = async (req, res) => {
+  let infoResponse;
+  const user = await User.findOne({ where: { username: req.body.username } });
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  if (user && user.accountLocked) {
+    infoResponse = new InfoResponse(res.translate('user.username.notverified'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  const randexp = new RandExp(/[A-Z]{1}[a-z]{3}[@#]{1}[0-9]{3}/);
+  const params = {
+    password: randexp
+  };
+  await nodemailer(user.username, 'createuser', params);
+  infoResponse = new InfoResponse(res.translate('user.forgetpwd.success'));
   res.status(200).json(infoResponse);
 };
 
-module.exports = { createUserAndSendEmail, authenticateUser, updateMyProfile };
+const resendVerificationCode = async (req, res) => {
+  let infoResponse;
+  const user = await User.findOne({ where: { username: req.body.username } });
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  if (user && !user.accountLocked) {
+    infoResponse = new InfoResponse(res.translate('user.username.verified'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  const verificationCode = Math.floor(10000 + Math.random() * 90000);
+  await user.update({ verificationCode });
+  const params = {
+    givenname: user.givenname
+  };
+  await nodemailer(user.username, 'createuser', params);
+  infoResponse = new InfoResponse(res.translate('user.resend.success'));
+  res.status(200).json(infoResponse);
+};
+
+const updateMyProfile = async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findByPk(userId);
+  let infoResponse;
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  await User.update({ publicProfile: req.body.publicProfile }, { where: { id: req.params.id } });
+  infoResponse = new InfoResponse(res.translate('user.changepassword.success'));
+  res.status(200).json(infoResponse);
+};
+
+const changePassword = async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findByPk(userId);
+  let infoResponse;
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  const match = await bcrypt.compare(req.body.oldPassword, user.password);
+  if (!match) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(409).json(infoResponse);
+    return;
+  }
+  const hash = bcrypt.hash(req.body.password, 10);
+
+  await User.update({ password: hash }, { where: { id: req.params.id } });
+  infoResponse = new InfoResponse(res.translate('user.changepassword.success'));
+  res.status(200).json(infoResponse);
+};
+module.exports = { createUserAndSendEmail, authenticateUser, forgetPassword, resendVerificationCode, changePassword, updateMyProfile };

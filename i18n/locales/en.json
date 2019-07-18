@@ -11,5 +11,7 @@
 	"user.login.sucess": "user.login.sucess",
 	"auth.header.error": "auth.header.error",
 	"auth.token.error": "auth.token.error",
-	"user.myprofile.success": "user.myprofile.success"
+	"user.myprofile.success": "user.myprofile.success",
+	"contactus.success": "contactus.success",
+	"user.validation.error": "user.validation.error"
 }

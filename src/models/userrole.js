@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       role: DataTypes.STRING
     },
-    { underscored: true }
+    { timestamps: false }
   );
   UserRole.associate = models => {
     UserRole.belongsTo(models.User, {
