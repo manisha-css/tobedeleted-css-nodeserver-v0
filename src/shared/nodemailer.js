@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
 const EmailTemplates = require('email-templates');
 const logger = require('./logger');
 
@@ -21,6 +22,7 @@ module.exports = async (to, template, params) => {
         extension: 'ejs'
       }
     },
+    root: path.resolve('email-templates'),
     preview: false
   });
   const emailOptions = {

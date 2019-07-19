@@ -1,22 +1,20 @@
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const RandExp = require('randexp');
-const db = require('../models/index');
-const InfoResponse = require('../dto/inforesponse');
+const bcrypt = require('bcrypt');
+const InfoResponse = require('../shared/inforesponse');
 const CONSTANTS = require('../shared/constants');
 const logger = require('../shared/logger.js');
 const nodemailer = require('../shared/nodemailer');
-
-const { User } = db.sequelize.models;
-const { UserRole } = db.sequelize.models;
+const userValidator = require('../validators/user.validator');
+const userService = require('../services/user.service');
+// const utils = require('../services/utils.service');
 
 const createUserAndSendEmail = async (req, res) => {
   const reqUserObj = {};
   reqUserObj.username = req.body.username;
   reqUserObj.givenname = req.body.givenname;
 
-  const user = await User.findOne({ where: { username: req.body.username } });
-
+  const user = await userService.findUserByName(req.body.username);
   let infoResponse;
   if (user && user.id > 0) {
     infoResponse = new InfoResponse(res.translate('user.username.exists'));
@@ -24,89 +22,132 @@ const createUserAndSendEmail = async (req, res) => {
     return;
   }
 
-  bcrypt.hash(req.body.password, 10, async (err, hash) => {
-    if (err) {
-      throw err;
-    }
-    reqUserObj.password = hash;
+  // const hashedpwd = utils.hashPassword(req.body.password);
+  const hashedPassword = await bcrypt.hash(req.body.password, CONSTANTS.BCRYPT_SALTROUNDS);
+  reqUserObj.password = hashedPassword;
 
-    // set verification code with 5 digit number
-    reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
-    reqUserObj.accountLocked = true;
-    reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
-    reqUserObj.roles = [{ role: 'USER' }];
+  // set verification code with 5 digit number
+  reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
+  reqUserObj.accountLocked = true;
+  reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
+  reqUserObj.roles = [{ role: 'USER' }];
 
-    try {
-      // Result is whatever you returned inside the transaction
-      const result = await db.sequelize.transaction(async txn => {
-        // step 1
-        const dbuser = await User.create(reqUserObj, { transaction: txn });
+  await userService.createUser(reqUserObj);
 
-        // step 2
-        return await UserRole.create(
-          {
-            user_id: dbuser.id,
-            role: 'USER'
-          },
-          { transaction: txn }
-        );
-      });
+  // send email
+  const params = {
+    givenname: reqUserObj.givenname
+  };
+  const emailresult = await nodemailer(reqUserObj.username, 'createuser', params);
+  if (emailresult) {
+    infoResponse = new InfoResponse(res.translate('user.register.success'));
+    res.status(200).json(infoResponse);
+  } else {
+    infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
+    res.status(200).json(infoResponse);
+  }
+};
 
-      // In this case, an instance of Model
-      console.log(result);
-    } catch (dberr) {
-      // Rollback transaction if any errors were encountered
-      console.log(dberr);
-      infoResponse = new InfoResponse(res.translate('user.register.error'));
-      res.status(500).json(infoResponse);
-      return;
-    }
+const verifyUserAccount = async (req, res) => {
+  let infoResponse;
+  try {
+    await userValidator.validateVerificationCode(req);
+  } catch (valerr) {
+    infoResponse = new InfoResponse(res.translate('user.validation.error') + valerr.message);
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
 
-    // const txn = await db.sequelize.transaction();
-    // try {
-    //   // get transaction
-    //   // await User.create(reqUserObj, { include: [{ model: UserRole, as: 'roles' }] });
-    //   const dbuser = await User.create(reqUserObj, { transaction: txn });
-    //   await UserRole.create(
-    //     {
-    //       user_id: dbuser.id,
-    //       role: 'USER'
-    //     },
-    //     { transaction: txn }
-    //   );
-    //   await txn.commit();
-    // } catch (dberr) {
-    //   logger.error(`----${dberr}`);
-    //   // Rollback transaction if any errors were encountered
-    //   await txn.rollback();
-    //   infoResponse = new InfoResponse(res.translate('user.register.error'));
-    //   res.status(500).json(infoResponse);
-    //   return;
-    // }
+  const user = await userService.findUserByName(req.body.username);
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
 
-    // send email
-    const params = {
-      givenname: reqUserObj.givenname
-    };
-    nodemailer(reqUserObj.username, 'createuser', params).then(
-      emailresult => {
-        infoResponse = new InfoResponse(res.translate('user.register.success'));
-        logger.debug(`email success${emailresult}`);
-        res.status(200).json(infoResponse);
-      },
-      emailerr => {
-        infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
-        logger.error(`eroro${emailerr}`);
-        res.status(200).json(infoResponse);
-      }
-    );
-  });
+  if (user && !user.accountLocked) {
+    infoResponse = new InfoResponse(res.translate('user.username.verified'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+
+  const verificationCode = Math.floor(10000 + Math.random() * 90000);
+  await userService.updateVerificationCode(verificationCode, user.id);
+  const params = {
+    givenname: user.givenname
+  };
+  await nodemailer(user.username, 'createuser', params);
+  infoResponse = new InfoResponse(res.translate('user.resend.success'));
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+};
+
+const forgetPassword = async (req, res) => {
+  let infoResponse;
+  try {
+    await userValidator.validateUsername(req);
+  } catch (valerr) {
+    infoResponse = new InfoResponse(res.translate('user.validation.error') + valerr.message);
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+  const user = await userService.findUserByName(req.body.username);
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+  if (user && user.accountLocked) {
+    infoResponse = new InfoResponse(res.translate('user.username.notverified'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+  const randexp = new RandExp(/[A-Z]{1}[a-z]{3}[@#]{1}[0-9]{3}/);
+  const params = {
+    username: user.username,
+    newpwd: randexp
+  };
+  await nodemailer(user.username, 'forgetpwd', params);
+  infoResponse = new InfoResponse(res.translate('user.forgetpwd.success'));
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+};
+
+const resendVerificationCode = async (req, res) => {
+  let infoResponse;
+  try {
+    await userValidator.validateUsername(req);
+  } catch (valerr) {
+    infoResponse = new InfoResponse(res.translate('user.validation.error') + valerr.message);
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+
+  const user = await userService.findUserByName(req.body.username);
+  if (!user) {
+    infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+
+  if (user && !user.accountLocked) {
+    infoResponse = new InfoResponse(res.translate('user.username.verified'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
+  const verificationCode = Math.floor(10000 + Math.random() * 90000);
+  await userService.updateVerificationCode(verificationCode, user.id);
+  const params = {
+    givenname: user.givenname
+  };
+  await nodemailer(user.username, 'createuser', params);
+  infoResponse = new InfoResponse(res.translate('user.resend.success'));
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
 };
 
 const authenticateUser = async (req, res) => {
   let infoResponse;
   let status;
-  const user = await User.findOne({ where: { username: req.body.username }, include: [{ model: UserRole, as: 'roles' }] });
+
+  const user = await userService.findUserByNameWithRoles(req.body.username);
 
   if (user) {
     logger.debug(`user${user.id}`);
@@ -140,69 +181,21 @@ const authenticateUser = async (req, res) => {
     res.status(200).json(infoResponse);
   }
 };
-
-const forgetPassword = async (req, res) => {
-  let infoResponse;
-  const user = await User.findOne({ where: { username: req.body.username } });
-  if (!user) {
-    infoResponse = new InfoResponse(res.translate('user.notfound'));
-    res.status(409).json(infoResponse);
-    return;
-  }
-  if (user && user.accountLocked) {
-    infoResponse = new InfoResponse(res.translate('user.username.notverified'));
-    res.status(409).json(infoResponse);
-    return;
-  }
-  const randexp = new RandExp(/[A-Z]{1}[a-z]{3}[@#]{1}[0-9]{3}/);
-  const params = {
-    password: randexp
-  };
-  await nodemailer(user.username, 'createuser', params);
-  infoResponse = new InfoResponse(res.translate('user.forgetpwd.success'));
-  res.status(200).json(infoResponse);
-};
-
-const resendVerificationCode = async (req, res) => {
-  let infoResponse;
-  const user = await User.findOne({ where: { username: req.body.username } });
-  if (!user) {
-    infoResponse = new InfoResponse(res.translate('user.notfound'));
-    res.status(409).json(infoResponse);
-    return;
-  }
-  if (user && !user.accountLocked) {
-    infoResponse = new InfoResponse(res.translate('user.username.verified'));
-    res.status(409).json(infoResponse);
-    return;
-  }
-  const verificationCode = Math.floor(10000 + Math.random() * 90000);
-  await user.update({ verificationCode });
-  const params = {
-    givenname: user.givenname
-  };
-  await nodemailer(user.username, 'createuser', params);
-  infoResponse = new InfoResponse(res.translate('user.resend.success'));
-  res.status(200).json(infoResponse);
-};
-
 const updateMyProfile = async (req, res) => {
-  const userId = req.params.id;
-  const user = await User.findByPk(userId);
+  const user = await userService.findUserById(req.params.id);
   let infoResponse;
   if (!user) {
     infoResponse = new InfoResponse(res.translate('user.notfound'));
     res.status(409).json(infoResponse);
     return;
   }
-  await User.update({ publicProfile: req.body.publicProfile }, { where: { id: req.params.id } });
+  await userService.updateProfile(req);
   infoResponse = new InfoResponse(res.translate('user.changepassword.success'));
   res.status(200).json(infoResponse);
 };
 
 const changePassword = async (req, res) => {
-  const userId = req.params.id;
-  const user = await User.findByPk(userId);
+  const user = await userService.findUserById(req.params.id);
   let infoResponse;
   if (!user) {
     infoResponse = new InfoResponse(res.translate('user.notfound'));
@@ -215,10 +208,21 @@ const changePassword = async (req, res) => {
     res.status(409).json(infoResponse);
     return;
   }
-  const hash = bcrypt.hash(req.body.password, 10);
-
-  await User.update({ password: hash }, { where: { id: req.params.id } });
-  infoResponse = new InfoResponse(res.translate('user.changepassword.success'));
-  res.status(200).json(infoResponse);
+  bcrypt.hash(req.body.password, 10, async (err, hash) => {
+    if (err) {
+      throw err;
+    }
+    await userService.updateProfile(hash);
+    infoResponse = new InfoResponse(res.translate('user.changepassword.success'));
+    res.status(200).json(infoResponse);
+  });
 };
-module.exports = { createUserAndSendEmail, authenticateUser, forgetPassword, resendVerificationCode, changePassword, updateMyProfile };
+module.exports = {
+  createUserAndSendEmail,
+  verifyUserAccount,
+  forgetPassword,
+  resendVerificationCode,
+  authenticateUser,
+  changePassword,
+  updateMyProfile
+};

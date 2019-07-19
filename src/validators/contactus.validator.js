@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const contactusValidatorSchema = require('./contactus.validator.schema');
-const InfoResponse = require('../dto/inforesponse');
+const InfoResponse = require('../shared/inforesponse');
 
 const validateInsert = (req, res, next) => {
   Joi.validate(req.body, contactusValidatorSchema.insertContactUs, (error, value) => {

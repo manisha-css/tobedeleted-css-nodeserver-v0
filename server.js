@@ -4,14 +4,10 @@ const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const i18n = require('./src/shared/i18n');
-
 const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./swagger.json');
-const userRoutes = require('./src/routes/user.routes');
-const contactusRoutes = require('./src/routes/contactus.routes');
-
-const errorHandler = require('./src/shared/error-handler');
+const apiRoutes = require('./src/routes/index');
 
 const server = express();
 
@@ -48,30 +44,18 @@ server.use(
 // below will add to winston httplogger
 server.use(morgan('combined', { stream: httplogger.stream }));
 
-server.get(
-  '/',
-  errorHandler.wrapAsync(async (req, res) => {
-    const greeting = 'HelloWorld';
-    res.send(res.translate(greeting));
-  })
-);
+server.use('/api', apiRoutes);
 
-server.get(
-  '/healthcheck',
-  errorHandler.wrapAsync(async (req, res) => {
-    res.json({
-      message: 'Healthcheck is successfull'
-    });
-  })
-);
+// handle 404
+server.use((req, res) => {
+  res.status(404).json({ message: `Route${req.url} Not found.` });
+});
 
-userRoutes.userRoutes(server);
-contactusRoutes.contactusRoutes(server);
-// below needs to be at the end of all routes
-server.use((error, req, res, next) => {
-  res.json({ message: error.message });
-  // pass it to express to handle it
-  next(error);
+// below needs to be at the end of all
+server.use((error, req, res) => {
+  // Any request to this server will get here, and will send an HTTP
+  logger.error(`Generic Error: ${error.message}`);
+  res.status(500).json({ message: error.message });
 });
 
 server.listen(process.env.PORT, () => {

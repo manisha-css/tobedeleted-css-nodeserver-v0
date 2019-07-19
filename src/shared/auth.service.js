@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const InfoResponse = require('../dto/inforesponse');
+const InfoResponse = require('../shared/inforesponse');
 const rolebasedAccess = require('./rolebased-acess');
 const logger = require('../shared/logger.js');
 

@@ -4,7 +4,7 @@ const Sequelize = require('sequelize');
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const dbconfig = require('../config/dbconfig.json')[env];
+const dbconfig = require('../../config/dbconfig.json')[env];
 const logger = require('../shared/logger.js');
 
 const db = {};
@@ -28,7 +28,7 @@ fs.readdirSync(__dirname)
   .forEach(file => {
     const model = sequelize.import(path.join(__dirname, file));
     db[model.name] = model;
-    logger.debug(`model name: ${model.name}`);
+    logger.debug(`model.name${model.name}`);
   });
 
 Object.keys(db).forEach(modelName => {

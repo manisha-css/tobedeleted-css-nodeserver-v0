@@ -3,12 +3,8 @@ const Joi = require('@hapi/joi');
 const usernameKey = Joi.string()
   .max(100)
   .email()
-  .required()
-  .error(() => {
-    return {
-      message: 'user.register.username.error'
-    };
-  });
+  .required();
+
 const givennameKey = Joi.string()
   .max(100)
   .required();
@@ -18,7 +14,7 @@ const passwordKey = Joi.string()
   .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9\\s]).{8,16}$/)
   .required();
 
-const insertValidator = Joi.object().keys({
+const validateCreateSchema = Joi.object().keys({
   username: usernameKey,
   givenname: givennameKey,
   password: passwordKey,
@@ -27,13 +23,19 @@ const insertValidator = Joi.object().keys({
     .required()
 });
 
-const loginValidator = Joi.object().keys({
+const validateLoginSchema = Joi.object().keys({
   username: Joi.string().required(),
   password: Joi.string().required()
 });
 
-const userNameValidator = Joi.object().keys({
+const validateUsernameSchema = Joi.object().keys({
   username: usernameKey
 });
 
-module.exports = { insertValidator, loginValidator, userNameValidator };
+const validateVerificationCodeSchema = Joi.object().keys({
+  verificationCode: Joi.number()
+    .integer()
+    .required()
+});
+
+module.exports = { validateCreateSchema, validateLoginSchema, validateUsernameSchema, validateVerificationCodeSchema };
