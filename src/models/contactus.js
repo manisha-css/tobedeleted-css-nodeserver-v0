@@ -2,14 +2,15 @@ module.exports = (sequelize, DataTypes) => {
   const ContactUs = sequelize.define(
     'ContactUs',
     {
-      givenName: DataTypes.STRING,
+      givenName: {
+        type: DataTypes.STRING,
+        field: 'givenname'
+      },
       email: DataTypes.STRING,
       feedback: DataTypes.STRING
     },
     {
-      freezeTableName: true,
-      timestamps: false,
-      underscored: true
+      freezeTableName: true
     }
   );
 
