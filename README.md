@@ -1,14 +1,18 @@
-# CssNodeServer
+# Css Node Server - Bootstrap template
 
-##IDE:
+## Preferred IDE:
+
 Visual Studio Code.
 
-##Min Extensions required:
+## Min Extensions required:
+
 Beautify
 Prettier
 ESLint
 
-##IDE settings.json
+## IDE Settings:
+
+Update VS Code settings.json
 Either global settings or project specific under /.vscode/settings.json)
 
 {
@@ -42,12 +46,11 @@ Either global settings or project specific under /.vscode/settings.json)
 "npm.enableScriptExplorer": true
 }
 
-#Node Bootstrap:
+## git repo:
 
-##git repo:
 https://github.com/manisha-css/css-nodeserver
 
-#Features included
+# Features developed
 
 - Initialization
 - Health check
@@ -74,8 +77,6 @@ https://github.com/manisha-css/css-nodeserver
   Change password
 - Contact Us module
 
-# Setting up
-
 ## Prerequisite:
 
 - node/npm/angular-cli is already installed.
@@ -83,7 +84,7 @@ https://github.com/manisha-css/css-nodeserver
 - Project has been created using angular-cli version 8.0.3
 - Visual Studio Code (Mine is Version 1.36.1)
 
-## Steps:
+## Steps to run:
 
 1. clone it to your project directory
 2. Open in IDE
