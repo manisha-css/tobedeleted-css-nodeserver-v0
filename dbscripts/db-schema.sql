@@ -16,18 +16,6 @@ CREATE TABLE IF NOT EXISTS `contactus` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `user_roles`
---
-
- SET character_set_client = utf8mb4 ;
-CREATE TABLE IF NOT EXISTS `user_roles` (
-  `user_id` bigint(20) NOT NULL,
-  `role` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`user_id`,`role`),
-  KEY `FK_user_userrole` (`user_id`),
-  CONSTRAINT `FK_user_userrole` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `users`
@@ -48,3 +36,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `UK_sb8bbouer5wak8vyiiy4pf2bx` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `user_roles`
+--
+
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `user_id` bigint(20) NOT NULL,
+  `role` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`user_id`,`role`),
+  KEY `FK_user_userrole` (`user_id`),
+  CONSTRAINT `FK_user_userrole` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
