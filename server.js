@@ -13,21 +13,11 @@ const server = express();
 
 // allow options
 server.options('*', cors());
-const whitelist = ['http://localhost:4200', 'http://localhost:4300'];
-// const corsOptions = {
-//   origin(origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1 || !origin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   }
-// };
-
+const whitelist = process.env.CORS_WHITELIST.split(',');
 const corsOptions = {
   origin: (origin, callback) => {
     // allow requests with no origin
-    // (like mobile apps or curl requests)
+    // (like server to server or curl requests)
     if (!origin) return callback(null, true);
     if (whitelist.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';

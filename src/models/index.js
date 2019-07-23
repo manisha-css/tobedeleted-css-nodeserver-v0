@@ -3,8 +3,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const dbconfig = require('../../config/dbconfig.js')[env];
+// const env = process.env.NODE_ENV || 'development';
+const dbconfig = require('../../config/dbconfig.js');
 const logger = require('../shared/logger.js');
 
 const db = {};
