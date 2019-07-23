@@ -1,23 +1,18 @@
 const InfoResponse = require('../shared/inforesponse');
-const contactUsService = require('../services/email.service');
-const emailService = require('../services/email.service');
+const contactUsService = require('../services/contactus.service');
+const nodemailer = require('../shared/nodemailer');
+const CONSTANTS = require('../shared/constants');
 
 const createContavUsAndSendEmailToAdmin = async (req, res) => {
-  let infoResponse;
   contactUsService.createContactUs(req.body);
   const params = {
-    givenname: req.body.givenname,
+    givenName: req.body.givenName,
     email: req.body.email,
     feedback: req.body.feedback
   };
-  const emailresult = await emailService.sendEmail(process.env.EMAIL_FEEDBACK, 'contactus', params);
-  if (emailresult) {
-    infoResponse = new InfoResponse(res.translate('contactus.success'));
-    res.status(200).json(infoResponse);
-  } else {
-    infoResponse = new InfoResponse(res.translate('contactus.success.noemail'));
-    res.status(200).json(infoResponse);
-  }
+  await nodemailer(process.env.EMAIL_FEEDBACK, CONSTANTS.EMAIL_TEMPLATE_CONTACTUS, params);
+  const infoResponse = new InfoResponse(res.translate('contactus.success'));
+  res.status(200).json(infoResponse);
 };
 
 module.exports = { createContavUsAndSendEmailToAdmin };

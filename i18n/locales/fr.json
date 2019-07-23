@@ -1,9 +1,3 @@
 {
-  "HelloWorld": "French HelloWorld",
-  "user.register.success": "French register success",
-  "user.register.success.noemail": "French register success but no email",
-  "user.register.username.error": "French username error",
-  "user.username.exists": "user.username.exists",
-  "user.userpassword.bcrypt.error": "user.userpassword.bcrypt.error",
-  "user.register.error": "user.register.error"
+  "healthcheck.success": "French Healthcheck success"
 }

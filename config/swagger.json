@@ -5,13 +5,13 @@
     "title": "ipify",
     "version": "v1"
   },
-  "host": "api.ipify.org",
+  "host": "css.org",
   "schemes": ["http"],
   "basePath": "/",
   "paths": {
-    "/": {
+    "/healthcheck": {
       "get": {
-        "summary": "Get hello world",
+        "summary": "Get healthcheck response",
         "responses": {
           "200": {
             "description": "Success response"

@@ -6,23 +6,38 @@ const morgan = require('morgan');
 const i18n = require('./src/shared/i18n');
 const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
-const swaggerDocument = require('./swagger.json');
+const swaggerDocument = require('./config/swagger.json');
 const apiRoutes = require('./src/routes/index');
 
 const server = express();
 
 // allow options
 server.options('*', cors());
-const whitelist = ['http://localhost:4200/en', 'http://localhost:4300/fr'];
+const whitelist = ['http://localhost:4200', 'http://localhost:4300'];
+// const corsOptions = {
+//   origin(origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   }
+// };
+
 const corsOptions = {
-  origin(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+  origin: (origin, callback) => {
+    // allow requests with no origin
+    // (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (whitelist.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
-  }
+    return callback(null, true);
+  },
+  exposedHeaders: ['Authorization']
 };
+
 server.use(cors(corsOptions));
 
 // i18n init
@@ -44,6 +59,7 @@ server.use(
 // below will add to winston httplogger
 server.use(morgan('combined', { stream: httplogger.stream }));
 
+// attach main api routes
 server.use('/api', apiRoutes);
 
 // handle 404

@@ -4,9 +4,9 @@ const logger = require('../shared/logger.js');
 const { User } = db.sequelize.models;
 const { UserRole } = db.sequelize.models;
 
-const findUserByName = async username => {
+const findUserByName = async userName => {
   try {
-    return await User.findOne({ where: { username } });
+    return await User.findOne({ where: { userName } });
   } catch (err) {
     throw new Error(err.message);
   }
@@ -20,9 +20,9 @@ const findUserById = async userId => {
   }
 };
 
-const findUserByNameWithRoles = async username => {
+const findUserByNameWithRoles = async userName => {
   try {
-    return await User.findOne({ where: { username }, include: [{ model: UserRole, as: 'roles' }] });
+    return await User.findOne({ where: { userName }, include: [{ model: UserRole, as: 'roles' }] });
   } catch (err) {
     throw new Error(err.message);
   }
@@ -50,14 +50,6 @@ const createUser = async reqUserObj => {
   }
 };
 
-const updateProfile = async req => {
-  try {
-    await User.update({ publicProfile: req.body.publicProfile }, { where: { id: req.params.id } });
-  } catch (dberr) {
-    throw new Error(dberr);
-  }
-};
-
 const updateVerificationCode = async (verificationCode, userId) => {
   try {
     await User.update({ verificationCode }, { where: { id: userId } });
@@ -74,9 +66,17 @@ const updateAccountLocked = async (accountLocked, userId) => {
   }
 };
 
-const updatePassword = async req => {
+const updatePassword = async (newpassword, userId) => {
   try {
-    await User.update({ publicProfile: req.body.publicProfile }, { where: { id: req.params.id } });
+    await User.update({ userPassword: newpassword }, { where: { id: userId } });
+  } catch (dberr) {
+    throw new Error(dberr);
+  }
+};
+
+const updateProfile = async (reqUserObj, userId) => {
+  try {
+    await User.update({ givenName: reqUserObj.givenName, publicProfile: reqUserObj.publicProfile }, { where: { id: userId } });
   } catch (dberr) {
     throw new Error(dberr);
   }

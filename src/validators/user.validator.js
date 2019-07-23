@@ -32,5 +32,19 @@ const validateVerificationCode = reqBody => {
     }
   });
 };
+const validateChangePassword = reqBody => {
+  Joi.validate(reqBody, userValidatorSchema.validateChangePasswordSchema, error => {
+    if (error) {
+      throw new Error(error.details[0].message);
+    }
+  });
+};
+const validateMyProfile = reqBody => {
+  Joi.validate(reqBody, userValidatorSchema.validateMyProfileSchema, error => {
+    if (error) {
+      throw new Error(error.details[0].message);
+    }
+  });
+};
 
-module.exports = { validateCreate, validateLogin, validateUsername, validateVerificationCode };
+module.exports = { validateCreate, validateLogin, validateUsername, validateVerificationCode, validateChangePassword, validateMyProfile };

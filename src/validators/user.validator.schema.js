@@ -15,27 +15,54 @@ const passwordKey = Joi.string()
   .required();
 
 const validateCreateSchema = Joi.object().keys({
-  username: usernameKey,
-  givenname: givennameKey,
-  password: passwordKey,
-  cnfpassword: Joi.string()
-    .valid(Joi.ref('password'))
+  acceptTC: Joi.boolean().valid(true),
+  userName: usernameKey,
+  givenName: givennameKey,
+  userPassword: passwordKey,
+  confirmPassword: Joi.string()
+    .valid(Joi.ref('userPassword'))
     .required()
 });
 
 const validateLoginSchema = Joi.object().keys({
-  username: Joi.string().required(),
-  password: Joi.string().required()
+  userName: Joi.string().required(),
+  userPassword: Joi.string().required()
 });
 
 const validateUsernameSchema = Joi.object().keys({
-  username: usernameKey
+  userName: usernameKey
 });
 
 const validateVerificationCodeSchema = Joi.object().keys({
-  verificationCode: Joi.number()
+  userName: usernameKey,
+  userVerificationCode: Joi.number()
     .integer()
     .required()
 });
 
-module.exports = { validateCreateSchema, validateLoginSchema, validateUsernameSchema, validateVerificationCodeSchema };
+const validateChangePasswordSchema = Joi.object()
+  .keys({
+    oldPassword: Joi.string()
+      .max(100)
+      .required(),
+    newPassword: passwordKey,
+    confirmPassword: Joi.string()
+      .valid(Joi.ref('newPassword'))
+      .required()
+  })
+  .unknown(true);
+
+const validateMyProfileSchema = Joi.object()
+  .keys({
+    givenName: Joi.string().required(),
+    publicProfile: Joi.string().required()
+  })
+  .unknown(true);
+module.exports = {
+  validateCreateSchema,
+  validateLoginSchema,
+  validateUsernameSchema,
+  validateVerificationCodeSchema,
+  validateChangePasswordSchema,
+  validateMyProfileSchema
+};

@@ -5,7 +5,7 @@ const email = Joi.string()
   .email()
   .required();
 
-const givenname = Joi.string()
+const givenName = Joi.string()
   .max(100)
   .required();
 
@@ -15,7 +15,7 @@ const feedback = Joi.string()
 
 const insertContactUs = Joi.object().keys({
   email,
-  givenname,
+  givenName,
   feedback
 });
 
