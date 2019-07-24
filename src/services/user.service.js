@@ -14,7 +14,34 @@ const findUserByName = async userName => {
 
 const findUserById = async userId => {
   try {
-    return await User.findOne({ where: { id: userId } });
+    return await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['userPassword', 'verificationCode'] }
+    });
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+const findUserByIdWithRoles = async userId => {
+  try {
+    const user = await User.findOne({
+      where: { id: userId },
+      include: [{ model: UserRole, as: 'roles' }],
+      attributes: { exclude: ['userPassword', 'verificationCode'] }
+    });
+    if (user) {
+      // get roles as a simple array
+      const userroles = [];
+      for (let i = 0; i < user.roles.length; i += 1) {
+        const userrole = user.roles[i];
+        userroles.push(userrole.role);
+      }
+      const retUserObj = user.get({ plain: true });
+      retUserObj.roles = userroles;
+      return retUserObj;
+    }
+    return user;
   } catch (err) {
     throw new Error(err.message);
   }
@@ -22,7 +49,19 @@ const findUserById = async userId => {
 
 const findUserByNameWithRoles = async userName => {
   try {
-    return await User.findOne({ where: { userName }, include: [{ model: UserRole, as: 'roles' }] });
+    const user = await User.findOne({ where: { userName }, include: [{ model: UserRole, as: 'roles' }] });
+    if (user) {
+      // get roles as a simple array first
+      const userroles = [];
+      for (let i = 0; i < user.roles.length; i += 1) {
+        const userrole = user.roles[i];
+        userroles.push(userrole.role);
+      }
+      const retUserObj = user.get({ plain: true });
+      retUserObj.roles = userroles;
+      return retUserObj;
+    }
+    return user;
   } catch (err) {
     throw new Error(err.message);
   }
@@ -86,6 +125,7 @@ module.exports = {
   findUserByName,
   findUserById,
   findUserByNameWithRoles,
+  findUserByIdWithRoles,
   createUser,
   updateVerificationCode,
   updateAccountLocked,

@@ -8,6 +8,7 @@ const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./config/swagger.json');
 const apiRoutes = require('./src/routes/index');
+const InfoResponse = require('./src/shared/inforesponse');
 
 const server = express();
 
@@ -61,7 +62,8 @@ server.use((req, res) => {
 server.use((error, req, res) => {
   // Any request to this server will get here, and will send an HTTP
   logger.error(`Generic Error: ${error.message}`);
-  res.status(500).json({ message: error.message });
+  const infoResponse = new InfoResponse(res.translate('general.error') + error.message);
+  res.status(500).json(infoResponse);
 });
 
 server.listen(process.env.PORT, () => {

@@ -6,45 +6,13 @@ Visual Studio Code.
 
 ## Min Extensions required:
 
-Beautify
-Prettier
-ESLint
+a) Beautify
+b) Prettier
+c) ESLint
 
 ## IDE Settings:
 
-Update VS Code settings.json
-Either global settings or project specific under /.vscode/settings.json)
-
-{
-"workbench.colorTheme": "Default Light+",
-"gitlens.advanced.messages": {
-"suppressShowKeyBindingsNotice": true
-},
-"typescript.updateImportsOnFileMove.enabled": "always",
-"window.zoomLevel": 0,
-"editor.hover.enabled": false,
-"[typescript]": {
-"editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"[javascript]": {
-"editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"[json]": {
-"editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"[jsonc]": {
-"editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"[css]": {
-"editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"[html]": {
-"editor.defaultFormatter": "HookyQR.beautify"
-},
-"editor.formatOnSave": true,
-"vsicons.projectDetection.autoReload": true,
-"npm.enableScriptExplorer": true
-}
+Inside /.vscode/settings.json, basic settings required for this project is stored.
 
 ## git repo:
 
@@ -63,18 +31,15 @@ https://github.com/manisha-css/css-nodeserver
 - Environment
 - Documentation
 - I18n / message resources
-- JWT Authentication
-- Role based authentication
-- Auth guards
 - User Module
-  User Registration
-  Verification by sending code to registered email
-  Re-Send Verification code
-  Forget password
-  Login (JWT Authentication)
-  Logout
-  My Profile
-  Change password
+  a) User Registration
+  b) Verification by sending code to registered email
+  c) Re-Send Verification code
+  d) Forget password
+  e) Login (JWT Authentication + Role based authorization)
+  f) Logout
+  g) My Profile
+  h) Change password
 - Contact Us module
 
 ## Prerequisite:
@@ -87,14 +52,18 @@ https://github.com/manisha-css/css-nodeserver
 ## Steps to run:
 
 1. clone it to your project directory
-2. Open in IDE
-3. At Project root
+2. Create database - run following 2 scripts
+   /dbscripts/db-schema.sql
+   /dbscript/db-seeddata.sql
+3. Copy env.example to .env file and change the values as per your environment
+4. Open in IDE
+5. At Project root
    \$ npm install
 
-4) To run locally with inspect
+6. To run locally with inspect
    \$ npm run start_env_inspect
 
-5) To run locally without inspect
+7. To run locally without inspect
    \$ npm run sstart_env_inspect
 
-6) Node server will be running on http://localhost:3000
+8. Node server will be running on http://localhost:3000

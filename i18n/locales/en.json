@@ -1,5 +1,6 @@
 {
   "healthcheck.ok": "Engish Healthcheck passed successfully",
+  "general.error": "Generic Server Error. Please try again later",
   "common.input.validation.error": "Form input values are invalid ",
   "contactus.success": "Thank you for your feedback/query. We will get back to as early as possible.",
   "user.notfound": "User is not found. Please check the email ID.",

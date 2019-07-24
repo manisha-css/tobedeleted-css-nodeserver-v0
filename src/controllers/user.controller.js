@@ -199,15 +199,8 @@ const authenticateUser = async (req, res) => {
     res.status(status).json(infoResponse);
     return;
   }
-  // get roles as a simple array first
-  const userroles = [];
-  for (let i = 0; i < user.roles.length; i += 1) {
-    const userrole = user.roles[i];
-    logger.debug(userrole);
-    userroles.push(userrole.role);
-  }
-  logger.debug(userroles);
-  const payload = { userId: user.id, userName: user.userName, roles: userroles };
+
+  const payload = { userId: user.id, userName: user.userName, roles: user.roles };
   const jwtToken = authService.generateAuthToken(payload);
 
   infoResponse = new InfoResponse(res.translate('login.sucess'));
@@ -280,12 +273,22 @@ const updateMyProfile = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  const user = await userService.findUserById(req.params.userId);
+  const user = await userService.findUserByIdWithRoles(req.params.userId);
+  if (!user) {
+    const infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
   res.status(CONSTANTS.HTTP_STATUS_OK).json(user);
 };
 
 const getBasicUser = async (req, res) => {
-  const user = await userService.findUserById(req.params.userId);
+  const user = await userService.findUserByIdWithRoles(req.params.userId);
+  if (!user) {
+    const infoResponse = new InfoResponse(res.translate('user.notfound'));
+    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+    return;
+  }
   const resUserObj = {};
   resUserObj.id = user.id;
   resUserObj.userName = user.userName;
