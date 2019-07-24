@@ -35,7 +35,6 @@ const createUserAndSendEmail = async (req, res) => {
   try {
     reqUserObj.userName = req.body.userName;
     reqUserObj.givenName = req.body.givenName;
-    // const hashedpwd = utils.hashPassword(req.body.userPassword);
     const hashedPassword = await bcrypt.hash(req.body.userPassword, CONSTANTS.BCRYPT_SALTROUNDS);
     reqUserObj.userPassword = hashedPassword;
     // set verification code with 5 digit number
@@ -227,7 +226,7 @@ const changePassword = async (req, res) => {
     return;
   }
   // here it is assumed that user is in authObj
-  const user = await userService.findUserById(res.locals.authObj.userId);
+  const user = await userService.findUserByIdWithPassword(res.locals.authObj.userId);
   if (!user) {
     infoResponse = new InfoResponse(res.translate('user.notfound'));
     res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);

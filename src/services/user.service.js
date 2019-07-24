@@ -15,6 +15,12 @@ const findUserById = userId => {
   });
 };
 
+const findUserByIdWithPassword = userId => {
+  return User.findOne({
+    where: { id: userId }
+  });
+};
+
 const findUserByIdWithRoles = async userId => {
   const user = await User.findOne({
     where: { id: userId },
@@ -86,6 +92,7 @@ const updateProfile = async (reqUserObj, userId) => {
 module.exports = {
   findUserByName,
   findUserById,
+  findUserByIdWithPassword,
   findUserByNameWithRoles,
   findUserByIdWithRoles,
   createUser,
