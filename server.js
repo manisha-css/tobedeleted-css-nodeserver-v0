@@ -59,11 +59,12 @@ server.use((req, res) => {
 });
 
 // below needs to be at the end of all
-server.use((error, req, res) => {
+server.use((error, req, res, next) => {
   // Any request to this server will get here, and will send an HTTP
   logger.error(`Generic Error: ${error.message}`);
   const infoResponse = new InfoResponse(res.translate('general.error') + error.message);
   res.status(500).json(infoResponse);
+  next(error);
 });
 
 server.listen(process.env.PORT, () => {
