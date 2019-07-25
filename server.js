@@ -35,9 +35,7 @@ server.use(cors(corsOptions));
 server.use(i18n.init);
 
 // swagger docs
-const router = express.Router();
 server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-server.use('/api/v1', router);
 
 // body parser
 server.use(bodyParser.json());

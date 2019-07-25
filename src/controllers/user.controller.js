@@ -53,14 +53,14 @@ const createUserAndSendEmail = async (req, res) => {
     const emailresult = await nodemailer(reqUserObj.userName, CONSTANTS.EMAIL_TEMPLATE_CREATE_USER, params);
     if (emailresult) {
       infoResponse = new InfoResponse(res.translate('register-user.save.success'));
-      res.status(200).json(infoResponse);
+      res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
     } else {
       infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
-      res.status(200).json(infoResponse);
+      res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
     }
   } catch (err) {
     infoResponse = new InfoResponse(res.translate('register-user.save.error'));
-    res.status(200).json(infoResponse);
+    res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
   }
 };
 const resendVerificationCode = async (req, res) => {

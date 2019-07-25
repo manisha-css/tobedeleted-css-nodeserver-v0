@@ -11,10 +11,7 @@ const logger = winston.createLogger({
   level: 'info',
   maxsize: 5242880,
   maxFiles: 5,
-  transports: [
-    new winston.transports.File({ level: 'error', filename: 'logs/error.log' }),
-    new winston.transports.File({ filename: 'logs/combined.log' })
-  ]
+  transports: [new winston.transports.File({ level: 'error', filename: 'logs/error.log' }), new winston.transports.File({ filename: 'logs/all.log' })]
 });
 
 if (process.env.NODE_ENV !== 'production') {

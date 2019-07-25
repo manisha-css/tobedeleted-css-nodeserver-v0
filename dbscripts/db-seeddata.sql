@@ -8,4 +8,6 @@ VALUES
 0, false, '2019-07-22 00:00:00', '2019-07-22 00:00:00');
 
 INSERT INTO `user_roles` (`user_id`, `role`)
+VALUES (1, 'USER');
+INSERT INTO `user_roles` (`user_id`, `role`)
 VALUES (1, 'ADMIN');

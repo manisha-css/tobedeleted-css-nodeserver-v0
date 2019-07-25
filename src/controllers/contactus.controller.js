@@ -12,7 +12,7 @@ const createContavUsAndSendEmailToAdmin = async (req, res) => {
   };
   await nodemailer(process.env.EMAIL_FEEDBACK, CONSTANTS.EMAIL_TEMPLATE_CONTACTUS, params);
   const infoResponse = new InfoResponse(res.translate('contactus.success'));
-  res.status(200).json(infoResponse);
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
 };
 
 module.exports = { createContavUsAndSendEmailToAdmin };

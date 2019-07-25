@@ -27,5 +27,5 @@
   "myprofile.save.success": "Profile is updated successfully.",
   "common.input.validation.error ": "common.input.validation.error ",
   "login.sucess": "Login is successful.",
-  "login.token.invalid": "login.token.invalid"
+  "login.token.invalid": "Invalid login token"
 }

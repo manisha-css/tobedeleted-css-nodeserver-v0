@@ -27,16 +27,16 @@ https://github.com/manisha-css/css-nodeserver
 - Code Format & Code quality
 - Pre commit hook
 - Logging
-- Exception handling – TODO more testing is required
+- Exception handling – more testing is required
 - Environment
 - Documentation
 - I18n / message resources
 - User Module
-  a) User Registration
+  a) User Registration - TODO - change to userdto class
   b) Verification by sending code to registered email
   c) Re-Send Verification code
   d) Forget password
-  e) Login (JWT Authentication + Role based authorization)
+  e) Login (JWT Authentication + Role based authorization -- TODO EXPIRY CHECK)
   f) Logout
   g) My Profile
   h) Change password
