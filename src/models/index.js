@@ -3,19 +3,13 @@ const path = require('path');
 const Sequelize = require('sequelize');
 
 const basename = path.basename(__filename);
-// const env = process.env.NODE_ENV || 'development';
+
 const dbconfig = require('../../config/dbconfig.js');
 const logger = require('../shared/logger.js');
 
 const db = {};
 
-let sequelize;
-
-if (dbconfig.use_env_variable) {
-  sequelize = new Sequelize(process.env[dbconfig.use_env_variable], dbconfig);
-} else {
-  sequelize = new Sequelize(dbconfig.database, dbconfig.userName, dbconfig.password, dbconfig);
-}
+const sequelize = new Sequelize(dbconfig.database, dbconfig.userName, dbconfig.password, dbconfig);
 
 // below generates all models references inside directory automatically
 // it is equivalent to manual entry as below

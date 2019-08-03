@@ -1,5 +1,5 @@
 
-CREATE DATABASE  IF NOT EXISTS `cssnode` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT ENCRYPTION='N';
+CREATE DATABASE  IF NOT EXISTS `cssnode` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `cssnode`;
 
 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `contactus` (
 -- Table structure for table `users`
 --
 
- SET character_set_client = utf8mb4 ;
+
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `givenname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -48,3 +48,5 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   KEY `FK_user_userrole` (`user_id`),
   CONSTRAINT `FK_user_userrole` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+commit;

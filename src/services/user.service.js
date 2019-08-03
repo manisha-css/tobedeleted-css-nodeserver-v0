@@ -1,5 +1,7 @@
+const bcrypt = require('bcrypt');
 const db = require('../models/index');
 const logger = require('../shared/logger.js');
+const CONSTANTS = require('../shared/constants');
 
 const { User } = db.sequelize.models;
 const { UserRole } = db.sequelize.models;
@@ -57,7 +59,18 @@ const findUserByNameWithRoles = async userName => {
   return user;
 };
 
-const createUser = async reqUserObj => {
+const createUser = async reqBody => {
+  const reqUserObj = {};
+  reqUserObj.userName = reqBody.userName;
+  reqUserObj.givenName = reqBody.givenName;
+  const hashedPassword = await bcrypt.hash(reqBody.userPassword, CONSTANTS.BCRYPT_SALTROUNDS);
+  reqUserObj.userPassword = hashedPassword;
+  // set verification code with 5 digit number
+  reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
+  reqUserObj.accountLocked = true;
+  reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
+  reqUserObj.roles = [{ role: 'USER' }];
+
   // Result is whatever you returned inside the transaction
   const result = await db.sequelize.transaction(async txn => {
     const dbuser = await User.create(reqUserObj, { transaction: txn });

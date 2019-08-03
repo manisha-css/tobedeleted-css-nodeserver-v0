@@ -33,17 +33,7 @@ const createUserAndSendEmail = async (req, res) => {
   }
 
   try {
-    reqUserObj.userName = req.body.userName;
-    reqUserObj.givenName = req.body.givenName;
-    const hashedPassword = await bcrypt.hash(req.body.userPassword, CONSTANTS.BCRYPT_SALTROUNDS);
-    reqUserObj.userPassword = hashedPassword;
-    // set verification code with 5 digit number
-    reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
-    reqUserObj.accountLocked = true;
-    reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
-    reqUserObj.roles = [{ role: 'USER' }];
-
-    await userService.createUser(reqUserObj);
+    await userService.createUser(req.body);
 
     // send email
     const params = {
@@ -59,8 +49,9 @@ const createUserAndSendEmail = async (req, res) => {
       res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
     }
   } catch (err) {
+    logger.error(`some error ${err}`);
     infoResponse = new InfoResponse(res.translate('register-user.save.error'));
-    res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+    res.status(CONSTANTS.HTTP_STATUS_SERVER_ERROR).json(infoResponse);
   }
 };
 const resendVerificationCode = async (req, res) => {
