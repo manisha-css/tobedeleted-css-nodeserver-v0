@@ -1,19 +1,22 @@
 const express = require('express');
+
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const socketio = require('socket.io');
 const i18n = require('./src/shared/i18n');
 const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
 const swaggerDocument = require('./config/swagger.json');
 const apiRoutes = require('./src/routes/index');
 const InfoResponse = require('./src/shared/inforesponse');
+const socket = require('./src/shared/socketio');
 
-const server = express();
+const app = express();
 
 // allow options
-server.options('*', cors());
+app.options('*', cors());
 const whitelist = process.env.CORS_WHITELIST.split(',');
 const corsOptions = {
   origin: (origin, callback) => {
@@ -29,35 +32,35 @@ const corsOptions = {
   exposedHeaders: ['Authorization']
 };
 
-server.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 // i18n init
-server.use(i18n.init);
+app.use(i18n.init);
 
 // swagger docs
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // body parser
-server.use(bodyParser.json());
-server.use(
+app.use(bodyParser.json());
+app.use(
   bodyParser.urlencoded({
     extended: true
   })
 );
 
 // below will add to winston httplogger
-server.use(morgan('combined', { stream: httplogger.stream }));
+app.use(morgan('combined', { stream: httplogger.stream }));
 
 // attach main api routes
-server.use('/api', apiRoutes);
+app.use('/api', apiRoutes);
 
 // handle 404
-server.use((req, res) => {
+app.use((req, res) => {
   res.status(404).json({ message: `Route${req.url} Not found.` });
 });
 
 // below needs to be at the end of all
-server.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
   // Any request to this server will get here, and will send an HTTP
   logger.error(`Generic Error: ${error.message}`);
   const infoResponse = new InfoResponse(res.translate('general.error') + error.message);
@@ -65,6 +68,27 @@ server.use((error, req, res, next) => {
   next(error);
 });
 
-server.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   logger.info(`Node App started on port: ${process.env.PORT}`);
 });
+const io = socketio(server);
+socket.activate(io);
+
+// eslint-disable-next-line import/order
+// const socketio = require('socket.io').listen(server);
+
+// socketio.on('connection', socket => {
+//   logger.info('A user connected');
+
+//   socket.on('join', () => {
+//     logger.info('A user joined');
+//   });
+//   socket.on('new-message', message => {
+//     logger.info(message);
+//     socketio.emit('new-message', message);
+//   });
+//   // Whenever someone disconnects this piece of code executed
+//   socket.on('disconnect', () => {
+//     logger.info('A user disconnected');
+//   });
+// });

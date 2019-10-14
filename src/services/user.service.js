@@ -59,6 +59,11 @@ const findUserByNameWithRoles = async userName => {
   return user;
 };
 
+const findAllUsers = async () => {
+  const users = await User.findAll();
+  return users;
+};
+
 const createUser = async reqBody => {
   const reqUserObj = {};
   reqUserObj.userName = reqBody.userName;
@@ -108,6 +113,7 @@ module.exports = {
   findUserByIdWithPassword,
   findUserByNameWithRoles,
   findUserByIdWithRoles,
+  findAllUsers,
   createUser,
   updateVerificationCode,
   updateAccountLocked,

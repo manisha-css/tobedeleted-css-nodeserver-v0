@@ -49,4 +49,18 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   CONSTRAINT `FK_user_userrole` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+CREATE TABLE IF NOT EXISTS `user_connectivity_status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `onlinestatus` bit(1) NOT NULL DEFAULT b'0',
+  `socket_id` varchar(50) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_userconnectivitystatus_users` (`user_id`),
+  CONSTRAINT `FK_userconnectivitystatus_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 commit;

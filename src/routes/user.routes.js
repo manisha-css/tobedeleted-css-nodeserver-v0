@@ -19,5 +19,7 @@ userRoutes.post('/myprofile', authService.validateAuthToken, errorHandler.wrapAs
 
 userRoutes.get('/:userId', errorHandler.wrapAsync(userCotroller.getUser));
 userRoutes.get('/basicuser/:userId', errorHandler.wrapAsync(userCotroller.getBasicUser));
+userRoutes.get('/', errorHandler.wrapAsync(userCotroller.getAllUsers));
 
+userRoutes.get('/online/all', errorHandler.wrapAsync(userCotroller.getOnlineUsers));
 module.exports = userRoutes;

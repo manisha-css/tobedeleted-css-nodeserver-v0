@@ -14,7 +14,9 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/server.js"
+      "program": "${workspaceFolder}/server.js",
+      "args": ["-r", "dotenv/config"],
+      "env": { "CORS_WHITELIST": "http://localhost:4200,http://localhost:4300" }
     }
   ]
 }

@@ -6,6 +6,7 @@ const logger = require('../shared/logger.js');
 const nodemailer = require('../shared/nodemailer');
 const userValidator = require('../validators/user.validator');
 const userService = require('../services/user.service');
+const userConnectivityStatusService = require('../services/user-connectivity-status.service');
 const authService = require('../shared/auth.service');
 
 const createUserAndSendEmail = async (req, res) => {
@@ -287,6 +288,16 @@ const getBasicUser = async (req, res) => {
   res.status(CONSTANTS.HTTP_STATUS_OK).json(resUserObj);
 };
 
+const getAllUsers = async (req, res) => {
+  const users = await userService.findAllUsers();
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(users);
+};
+
+const getOnlineUsers = async (req, res) => {
+  const onlineusers = await userConnectivityStatusService.findAllOnlineUsers();
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(onlineusers);
+};
+
 module.exports = {
   createUserAndSendEmail,
   verifyUserAccount,
@@ -296,5 +307,7 @@ module.exports = {
   changePassword,
   updateMyProfile,
   getUser,
-  getBasicUser
+  getBasicUser,
+  getAllUsers,
+  getOnlineUsers
 };
