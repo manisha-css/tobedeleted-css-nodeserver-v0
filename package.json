@@ -9,6 +9,7 @@
     "format:prettier:fix": "./node_modules/.bin/prettier --config ./.prettierrc --list-different './**/*.{js,json,css}' --write",
     "lint": "./node_modules/.bin/eslint './**/*.js'",
     "lint:fix": "./node_modules/.bin/eslint './**/*.js' --fix",
+    "format:lint:fix": "npm run format:prettier:fix && npm run lint:fix",
     "start_env_inspect": "./node_modules/.bin/nodemon --inspect -r dotenv/config server.js",
     "start_env": "./node_modules/.bin/nodemon  -r dotenv/config server.js"
   },
