@@ -1,26 +1,45 @@
 const logger = require('./logger');
+const userConnectivityService = require('../services/user-connectivity-status.service');
 
 let nsp;
 
-exports.activate = async io => {
-  nsp = io.of('css');
+const activate = async io => {
+  nsp = io.of('/css');
 
   io.use((socket, next) => {
-    logger.info(`--------socket------${socket}`);
-    logger.info('io use handshake is done');
+    logger.info(`--------socket [${socket.id}] io handshake is done `);
     next();
   });
 
   nsp.on('connection', socket => {
-    logger.info(`Client socket connected, socket Id : ${socket.id}`);
-    // const queryData = { socketId: socket.id, user_Id: parseInt(queryParamUserId, 0), status: 1 };
-    // const joinEmitData = { user_Id: parseInt(queryParamUserId, 0), status: 1 };
-    socket.on('login', () => {
-      logger.info('socket login connected');
+    nsp.emit('refresh-onlineuserslist');
+    socket.on('loginsuccess', async data => {
+      const connectionStatusData = {
+        socketId: socket.id,
+        userId: parseInt(data.id, 0),
+        status: 1,
+        lastLoggedin: new Date(new Date().toUTCString())
+      };
+      await userConnectivityService.saveOrUpdateConnectivityStatus(connectionStatusData);
+      nsp.emit('refresh-onlineuserslist');
+    });
+
+    socket.on('logoutsuccess', async data => {
+      const connectionStatusData = {
+        socketId: socket.id,
+        userId: parseInt(data.id, 0),
+        status: 0,
+        lastLoggedin: new Date(new Date().toUTCString())
+      };
+      await userConnectivityService.saveOrUpdateConnectivityStatus(connectionStatusData);
+      nsp.emit('refresh-onlineuserslist');
     });
 
     socket.on('disconnect', () => {
       logger.info(`Client socket disconnected, socket Id : ${socket.id}`);
+      nsp.emit('refresh-onlineuserslist');
     });
   });
 };
+
+module.exports = { activate };

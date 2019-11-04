@@ -174,7 +174,7 @@ const authenticateUser = async (req, res) => {
     res.status(status).json(infoResponse);
     return;
   }
-  logger.debug(`user: ${user.id}`);
+  logger.debug(`Authenticate user: ${user.id}`);
   // match the password
   const match = await bcrypt.compare(req.body.userPassword, user.userPassword);
   if (!match) {
@@ -295,9 +295,12 @@ const getAllUsers = async (req, res) => {
 
 const getOnlineUsers = async (req, res) => {
   const onlineusers = await userConnectivityStatusService.findAllOnlineUsers();
-  res.status(CONSTANTS.HTTP_STATUS_OK).json(onlineusers);
+  const arrOnlineUsers = [];
+  onlineusers.forEach(element => {
+    arrOnlineUsers.push(element.userId);
+  });
+  res.status(CONSTANTS.HTTP_STATUS_OK).json(arrOnlineUsers);
 };
-
 module.exports = {
   createUserAndSendEmail,
   verifyUserAccount,

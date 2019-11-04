@@ -6,18 +6,18 @@ const { UserConnectivityStatus } = db.sequelize.models;
 
 const saveOrUpdateConnectivityStatus = async reqBody => {
   try {
-    const result = await UserConnectivityStatus.findOne({ where: { userId: reqBody.user_Id } });
+    const result = await UserConnectivityStatus.findOne({ where: { userId: reqBody.userId } });
     if (!result)
       await UserConnectivityStatus.create({
-        userId: reqBody.user_Id,
+        userId: reqBody.userId,
         socketId: reqBody.socketId,
-        status: reqBody.status,
-        createdBy: reqBody.user_Id
+        onlinestatus: reqBody.status,
+        createdBy: reqBody.userId
       });
     else
       await UserConnectivityStatus.update(
-        { socketId: reqBody.socketId, status: reqBody.status, lastupdatedBy: reqBody.user_Id },
-        { where: { userId: reqBody.user_Id } }
+        { socketId: reqBody.socketId, onlinestatus: reqBody.status, lastupdatedBy: reqBody.userId },
+        { where: { userId: reqBody.userId } }
       );
   } catch (error) {
     // Currently just logging the errors, as nothing can be done TODO check if we can disconnect ?? and logout the user ??
@@ -26,8 +26,11 @@ const saveOrUpdateConnectivityStatus = async reqBody => {
 };
 
 const findAllOnlineUsers = async () => {
-  const onlineUsers = await UserConnectivityStatus.findAll();
-  return onlineUsers;
+  const onlineusers = await UserConnectivityStatus.findAll({
+    attributes: ['userId'],
+    where: { onlinestatus: 1 }
+  });
+  return onlineusers;
 };
 
 const findOnlineUserById = async userId => {

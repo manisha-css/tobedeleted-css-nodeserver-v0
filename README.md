@@ -64,6 +64,6 @@ https://github.com/manisha-css/css-nodeserver
    \$ npm run start_env_inspect
 
 7. To run locally without inspect
-   \$ npm run sstart_env_inspect
+   \$ npm run start_env
 
 8. Node server will be running on http://localhost:3000

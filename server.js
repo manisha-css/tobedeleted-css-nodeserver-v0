@@ -73,22 +73,3 @@ const server = app.listen(process.env.PORT, () => {
 });
 const io = socketio(server);
 socket.activate(io);
-
-// eslint-disable-next-line import/order
-// const socketio = require('socket.io').listen(server);
-
-// socketio.on('connection', socket => {
-//   logger.info('A user connected');
-
-//   socket.on('join', () => {
-//     logger.info('A user joined');
-//   });
-//   socket.on('new-message', message => {
-//     logger.info(message);
-//     socketio.emit('new-message', message);
-//   });
-//   // Whenever someone disconnects this piece of code executed
-//   socket.on('disconnect', () => {
-//     logger.info('A user disconnected');
-//   });
-// });
