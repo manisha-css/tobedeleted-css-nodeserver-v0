@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       socketId: {
         type: DataTypes.STRING
+      },
+      lastLoggedIn: {
+        type: DataTypes.DATE
       }
     },
     {

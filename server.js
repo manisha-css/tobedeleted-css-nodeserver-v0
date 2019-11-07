@@ -12,6 +12,7 @@ const swaggerDocument = require('./config/swagger.json');
 const apiRoutes = require('./src/routes/index');
 const InfoResponse = require('./src/shared/inforesponse');
 const socket = require('./src/shared/socketio');
+require('./src/shared/cronjob');
 
 const app = express();
 

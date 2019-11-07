@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `contactus` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 --
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_sb8bbouer5wak8vyiiy4pf2bx` (`username`)
+  UNIQUE KEY `UK_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -54,10 +54,12 @@ CREATE TABLE IF NOT EXISTS `user_connectivity_status` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `onlinestatus` bit(1) NOT NULL DEFAULT b'0',
-  `socket_id` varchar(50) DEFAULT NULL,
+  `socket_id` varchar(50) NOT NULL,
+  `last_logged_in` datetime NOT NULL,  
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_user_id` (`user_id`),
   KEY `FK_userconnectivitystatus_users` (`user_id`),
   CONSTRAINT `FK_userconnectivitystatus_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -72,6 +74,6 @@ CREATE TABLE IF NOT EXISTS `helpintro` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `lang_pageid_UNIQUE` (`lang`,`pageid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 commit;
