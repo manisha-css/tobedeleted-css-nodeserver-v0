@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'password'
     },
+    profileImage: {
+      type: DataTypes.STRING
+    },
     verificationCode: DataTypes.STRING,
     accountLocked: DataTypes.BOOLEAN,
     publicProfile: DataTypes.STRING

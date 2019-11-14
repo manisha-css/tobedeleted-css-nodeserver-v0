@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const socketio = require('socket.io');
+
 const i18n = require('./src/shared/i18n');
 const logger = require('./src/shared/logger');
 const httplogger = require('./src/shared/httplogger');
@@ -12,6 +13,7 @@ const swaggerDocument = require('./config/swagger.json');
 const apiRoutes = require('./src/routes/index');
 const InfoResponse = require('./src/shared/inforesponse');
 const socket = require('./src/shared/socketio');
+
 require('./src/shared/cronjob');
 
 const app = express();
@@ -41,17 +43,15 @@ app.use(i18n.init);
 // swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// body parser
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
-);
-
 // below will add to winston httplogger
 app.use(morgan('combined', { stream: httplogger.stream }));
 
+// body parser so as to access req.body for content - this does not support file - so used multer
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+// static profile images
+app.use('/profileimage', express.static(process.env.USER_PROFILEIMAGE_PATH));
 // attach main api routes
 app.use('/api', apiRoutes);
 

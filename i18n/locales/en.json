@@ -9,6 +9,7 @@
   "register-user.userName-exists": "User name (Email) exists. Please choose different name.",
   "register-user.save.success": "User is registered successfully. Please check your email and verify the account before login.",
   "register-user.save.error": "Some error occurred while saving user.",
+  "user.register.success.noemail": "User is saved successfully, but verififcation code could not be sent via email",
   "register-user.save.notificationerror": "User saved successfully, but some error occurred while sending notification.",
   "jwt.token.invalid": "Please login again, your access token is invalid/expired.",
   "login.bad.credentials": "Bad credentials, either userName and/or password is wrong. Please try with correct credentials.",
@@ -28,5 +29,6 @@
   "myprofile.save.success": "Profile is updated successfully.",
   "common.input.validation.error ": "common.input.validation.error ",
   "login.sucess": "Login is successful.",
-  "login.token.invalid": "Invalid login token"
+  "login.token.invalid": "Invalid login token",
+  "upload.error": "Error while uploading profile image"
 }

@@ -74,6 +74,7 @@ const createUser = async reqBody => {
   reqUserObj.verificationCode = Math.floor(10000 + Math.random() * 90000);
   reqUserObj.accountLocked = true;
   reqUserObj.publicProfile = CONSTANTS.DEFAULT_PUBLIC_PROFILE;
+  reqUserObj.profileImage = CONSTANTS.DEFAULT_PROFILEIMAGE;
   reqUserObj.roles = [{ role: 'USER' }];
 
   // Result is whatever you returned inside the transaction
@@ -104,7 +105,10 @@ const updatePassword = async (newpassword, userId) => {
 };
 
 const updateProfile = async (reqUserObj, userId) => {
-  await User.update({ givenName: reqUserObj.givenName, publicProfile: reqUserObj.publicProfile }, { where: { id: userId } });
+  await User.update(
+    { givenName: reqUserObj.givenName, publicProfile: reqUserObj.publicProfile, profileImage: reqUserObj.profileImage },
+    { where: { id: userId } }
+  );
 };
 
 module.exports = {

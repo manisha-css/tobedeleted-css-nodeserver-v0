@@ -1,5 +1,7 @@
 const RandExp = require('randexp');
 const bcrypt = require('bcrypt');
+const path = require('path');
+const multer = require('multer');
 const InfoResponse = require('../shared/inforesponse');
 const CONSTANTS = require('../shared/constants');
 const logger = require('../shared/logger.js');
@@ -41,13 +43,20 @@ const createUserAndSendEmail = async (req, res) => {
       userName: reqUserObj.userName,
       verificationCode: reqUserObj.verificationCode
     };
-    const emailresult = await nodemailer(reqUserObj.userName, CONSTANTS.EMAIL_TEMPLATE_CREATE_USER, params);
-    if (emailresult) {
-      infoResponse = new InfoResponse(res.translate('register-user.save.success'));
-      res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
-    } else {
+    try {
+      const emailresult = await nodemailer(reqUserObj.userName, CONSTANTS.EMAIL_TEMPLATE_CREATE_USER, params);
+      if (emailresult) {
+        infoResponse = new InfoResponse(res.translate('register-user.save.success'));
+        res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+      } else {
+        infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
+        res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+      }
+    } catch (err) {
+      logger.error(`some error while sending error`);
       infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
-      res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+      res.status(CONSTANTS.HTTP_STATUS_SERVER_ERROR).json(infoResponse);
+      return;
     }
   } catch (err) {
     logger.error(`some error ${err}`);
@@ -201,6 +210,7 @@ const authenticateUser = async (req, res) => {
   resUserObj.userName = user.userName;
   resUserObj.givenName = user.givenName;
   resUserObj.roles = user.roles;
+  resUserObj.profileImage = user.profileImage;
 
   infoResponse.result = resUserObj;
 
@@ -242,25 +252,66 @@ const changePassword = async (req, res) => {
   infoResponse = new InfoResponse(res.translate('change-password.save.success'));
   res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
 };
+
+let profileImage;
+const DIR = process.env.USER_PROFILEIMAGE_PATH;
+logger.debug(`DIR:${DIR}`);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    const currentFileName = file.originalname.substr(0, file.originalname.lastIndexOf('.'));
+    const newname = currentFileName
+      .toLowerCase()
+      .split(' ')
+      .join('-');
+    profileImage = `${newname}-${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, profileImage);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  const extension = file.mimetype.split('/')[1];
+  if (
+    extension.toLowerCase() === 'png' ||
+    extension.toLowerCase() === 'jpeg' ||
+    extension.toLowerCase() === 'jpg' ||
+    extension.toLowerCase() === 'gif'
+  )
+    cb(null, true);
+  else cb(new Error(' Invalid file format'), false);
+};
+const upload = multer({ fileFilter, storage }).single('file');
+
 const updateMyProfile = async (req, res) => {
   let infoResponse;
-  try {
-    await userValidator.validateMyProfile(req.body);
-  } catch (valerr) {
-    infoResponse = new InfoResponse(res.translate('common.input.validation.error') + valerr.message);
-    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
-    return;
-  }
-  // here it is assumed that user is in authObj
-  const user = await userService.findUserById(res.locals.authObj.userId);
-  if (!user) {
-    infoResponse = new InfoResponse(res.translate('user.notfound'));
-    res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
-    return;
-  }
-  await userService.updateProfile(req.body, user.id);
-  infoResponse = new InfoResponse(res.translate('myprofile.save.success'));
-  res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+  // validations for uploaded file
+  upload(req, res, async err => {
+    if (err) {
+      infoResponse = new InfoResponse(res.translate('upload.error'));
+      res.status(CONSTANTS.HTTP_STATUS_SERVER_ERROR).json(infoResponse);
+      return;
+    }
+    try {
+      await userValidator.validateMyProfile(req.body);
+    } catch (valerr) {
+      infoResponse = new InfoResponse(res.translate('common.input.validation.error') + valerr.message);
+      res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+      return;
+    }
+    // here it is assumed that user is in authObj
+    const user = await userService.findUserById(res.locals.authObj.userId);
+    if (!user) {
+      infoResponse = new InfoResponse(res.translate('user.notfound'));
+      res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
+      return;
+    }
+
+    req.body.profileImage = profileImage;
+    await userService.updateProfile(req.body, user.id);
+    infoResponse = new InfoResponse(res.translate('myprofile.save.success'));
+    res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
+  });
 };
 
 const getUser = async (req, res) => {

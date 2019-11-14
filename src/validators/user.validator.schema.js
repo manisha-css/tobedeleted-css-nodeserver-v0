@@ -9,6 +9,7 @@ const givennameKey = Joi.string()
   .max(100)
   .required();
 
+// TODO use constant regex inside joi validator
 const passwordKey = Joi.string()
   .min(8)
   .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9\\s]).{8,16}$/)

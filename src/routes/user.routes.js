@@ -15,6 +15,7 @@ userRoutes.post('/forgetPassword', errorHandler.wrapAsync(userCotroller.forgetPa
 userRoutes.post('/verification/resend', errorHandler.wrapAsync(userCotroller.resendVerificationCode));
 
 userRoutes.post('/changePassword', authService.validateAuthToken, errorHandler.wrapAsync(userCotroller.changePassword));
+
 userRoutes.post('/myprofile', authService.validateAuthToken, errorHandler.wrapAsync(userCotroller.updateMyProfile));
 
 userRoutes.get('/:userId', errorHandler.wrapAsync(userCotroller.getUser));

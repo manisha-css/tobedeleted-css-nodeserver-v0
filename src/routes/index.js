@@ -11,6 +11,7 @@ apiRouter.get('/healthcheck', (req, res) => {
   const infoResponse = new InfoResponse(res.translate(greeting));
   res.json(infoResponse);
 });
+
 apiRouter.use('/contactus', contactusRoutes);
 apiRouter.use('/user', userRoutes);
 apiRouter.use('/helpintro', helpIntroRoutes);

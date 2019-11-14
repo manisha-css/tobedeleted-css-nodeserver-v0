@@ -1,6 +1,25 @@
 const CONSTANTS = {};
 
+// validation pattern
+// TODO use this regex inside joi validator
 CONSTANTS.SECRETKEY_PATTERN = '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9\\s]).{8,16}$';
+CONSTANTS.EMAIL_PATTERN =
+  "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+CONSTANTS.PHONE_PATTERN = '^[(]([1-9][0-9]{2})[)][-]([0-9]{3})[-]([0-9]{4})$'; // the form of 847-403-3160
+CONSTANTS.DISPLAYNAME_PATTERN = '^[A-Za-z]{1,}[A-Za-z0-9-_]{2,17}$';
+
+CONSTANTS.CATEGORYNAME_PATTERN = '^[A-Za-z]{1,}[A-Za-z0-9-_]{2,17}$';
+CONSTANTS.SUBJECTCODE_PATTERN = '^[A-Za-z]{1,}[A-Za-z0-9-_]{2,17}$';
+CONSTANTS.TAGNAME_PATTERN = '^[A-Za-z]{1,}[A-Za-z0-9-_]{2,17}$';
+
+CONSTANTS.ALPHA_PATTERN = '^[A-Za-z]{0,}$';
+CONSTANTS.ALPHA_PATTERN_WITHSPACE = '^[A-Za-z]{1,}[A-Za-z\\s]{0,}$';
+CONSTANTS.NUMERIC_PATTERN = '^[0-9]{0,}$';
+CONSTANTS.ALPHANUMERIC_PATTERN_WITHCOMMA = '^[A-Za-z]{1,}[A-Za-z0-9,]{0,}$';
+CONSTANTS.ALPHANUMERIC_PATTERN_WITHSPACE = '^[A-Za-z]{1,}[A-Za-z0-9\\s]{0,}$';
+CONSTANTS.ALPHANUMERIC_PATTERN_NOSPACE = '^[A-Za-z]{1,}[A-Za-z0-9]{0,}$';
+CONSTANTS.ALPHANUMERIC_SOMESPECIALCHARS_PATTERN = '^[\\s\\S]{0,}$';
+
 CONSTANTS.JWT_TOKEN_EXPIRY = '2d';
 CONSTANTS.JWT_TOKEN_PREFIX = 'Bearer';
 CONSTANTS.JWT_HEADER_STRING = 'Authorization';
@@ -20,4 +39,7 @@ CONSTANTS.EMAIL_TEMPLATE_CREATE_USER = 'createuser';
 CONSTANTS.EMAIL_TEMPLATE_FORGET_PWD = 'forgetpwd';
 CONSTANTS.EMAIL_TEMPLATE_CONTACTUS = 'contactus';
 
+CONSTANTS.HELPINTRO_DEFAULT_LANG = 'en';
+CONSTANTS.HELPINTRO_DEFAULT_PAGEID = '/home';
+CONSTANTS.DEFAULT_PROFILEIMAGE = 'default-user.png';
 module.exports = CONSTANTS;
