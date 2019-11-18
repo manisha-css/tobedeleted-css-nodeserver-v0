@@ -352,6 +352,7 @@ const getOnlineUsers = async (req, res) => {
   });
   res.status(CONSTANTS.HTTP_STATUS_OK).json(arrOnlineUsers);
 };
+
 module.exports = {
   createUserAndSendEmail,
   verifyUserAccount,

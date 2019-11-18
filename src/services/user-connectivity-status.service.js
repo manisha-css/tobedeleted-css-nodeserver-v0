@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const Sequelize = require('sequelize');
 const db = require('../models/index');
 const logger = require('../shared/logger');
@@ -24,7 +23,7 @@ const saveOrUpdateConnectivityStatus = async reqBody => {
       );
     }
   } catch (error) {
-    // Currently just logging the errors, as nothing can be done TODO check if we can disconnect ?? and logout the user ??
+    // Currently just logging the errors, as nothing can be done
     logger.error(`Error in saving connection status in DB: ${error}`);
   }
 };
@@ -35,7 +34,7 @@ const updateConnectivityStatusByUserId = async reqBody => {
       await UserConnectivityStatus.update({ socketId: reqBody.socketId, onlinestatus: reqBody.onlinestatus }, { where: { userId: reqBody.userId } });
     }
   } catch (error) {
-    // Currently just logging the errors, as nothing can be done TODO check if we can disconnect ?? and logout the user ??
+    // Currently just logging the errors, as nothing can be done
     logger.error(`Error in saving connection status in DB: ${error}`);
   }
 };
@@ -50,7 +49,7 @@ const updateConnectivityStatusBySocketId = async reqBody => {
       );
     }
   } catch (error) {
-    // Currently just logging the errors, as nothing can be done TODO check if we can disconnect ?? and logout the user ??
+    // Currently just logging the errors, as nothing can be done
     logger.error(`Error in saving connection status in DB: ${error}`);
   }
 };
@@ -62,7 +61,7 @@ const updateUnUsedSocketData = async usedSockets => {
       { where: { socketId: { [Op.notIn]: usedSockets }, onlinestatus: 1, lastLoggedIn: { [Op.lt]: new Date() } } }
     );
   } catch (error) {
-    // Currently just logging the errors, as nothing can be done TODO check if we can disconnect ?? and logout the user ??
+    // Currently just logging the errors, as nothing can be done
     logger.error(`Error in saving connection status in DB: ${error}`);
   }
 };

@@ -9,7 +9,7 @@ const activate = async io => {
   nsp = io.of('/css');
 
   io.use((socket, next) => {
-    logger.info(`--------socket [${socket.id}] io handshake is done `);
+    logger.info(`socket [${socket.id}] io handshake is done `);
     next();
   });
 
