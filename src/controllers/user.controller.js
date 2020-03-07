@@ -12,7 +12,6 @@ const userConnectivityStatusService = require('../services/user-connectivity-sta
 const authService = require('../shared/auth.service');
 
 const createUserAndSendEmail = async (req, res) => {
-  const reqUserObj = {};
   let infoResponse;
 
   try {
@@ -36,7 +35,7 @@ const createUserAndSendEmail = async (req, res) => {
   }
 
   try {
-    await userService.createUser(req.body);
+    const reqUserObj = await userService.createUser(req.body);
 
     // send email
     const params = {
@@ -53,7 +52,7 @@ const createUserAndSendEmail = async (req, res) => {
         res.status(CONSTANTS.HTTP_STATUS_OK).json(infoResponse);
       }
     } catch (err) {
-      logger.error(`some error while sending error`);
+      logger.error(`some error while sending email ${err}`);
       infoResponse = new InfoResponse(res.translate('user.register.success.noemail'));
       res.status(CONSTANTS.HTTP_STATUS_SERVER_ERROR).json(infoResponse);
       return;
@@ -324,8 +323,8 @@ const getUser = async (req, res) => {
   res.status(CONSTANTS.HTTP_STATUS_OK).json(user);
 };
 
-const getBasicUser = async (req, res) => {
-  const user = await userService.findUserByIdWithRoles(req.params.userId);
+const getLoggedInUserBasicInfo = async (req, res) => {
+  const user = await userService.findUserByIdWithRoles(res.locals.authObj.userId);
   if (!user) {
     const infoResponse = new InfoResponse(res.translate('user.notfound'));
     res.status(CONSTANTS.HTTP_STATUS_BAD_REQUEST).json(infoResponse);
@@ -339,8 +338,8 @@ const getBasicUser = async (req, res) => {
   res.status(CONSTANTS.HTTP_STATUS_OK).json(resUserObj);
 };
 
-const getAllUsers = async (req, res) => {
-  const users = await userService.findAllUsers();
+const getAllValidUsers = async (req, res) => {
+  const users = await userService.findAllValidUsers();
   res.status(CONSTANTS.HTTP_STATUS_OK).json(users);
 };
 
@@ -362,7 +361,7 @@ module.exports = {
   changePassword,
   updateMyProfile,
   getUser,
-  getBasicUser,
-  getAllUsers,
+  getLoggedInUserBasicInfo,
+  getAllValidUsers,
   getOnlineUsers
 };

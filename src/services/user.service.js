@@ -59,8 +59,8 @@ const findUserByNameWithRoles = async userName => {
   return user;
 };
 
-const findAllUsers = async () => {
-  const users = await User.findAll();
+const findAllValidUsers = async () => {
+  const users = await User.findAll({ where: { accountLocked: 0 } });
   return users;
 };
 
@@ -90,6 +90,7 @@ const createUser = async reqBody => {
     return true;
   });
   logger.debug(`result ${result}`);
+  return reqUserObj;
 };
 
 const updateVerificationCode = async (verificationCode, userId) => {
@@ -117,7 +118,7 @@ module.exports = {
   findUserByIdWithPassword,
   findUserByNameWithRoles,
   findUserByIdWithRoles,
-  findAllUsers,
+  findAllValidUsers,
   createUser,
   updateVerificationCode,
   updateAccountLocked,

@@ -56,6 +56,7 @@ https://github.com/manisha-css/css-nodeserver
    /dbscripts/db-schema.sql
    /dbscript/db-seeddata.sql
 3. Copy env.example to .env file and change the values as per your environment
+   For email SMTP - Currently using gsmtp. So please enter your gmail account details. Also you will need to turn on "Less Secure" app
 4. Open in IDE
 5. At Project root
    \$ npm install

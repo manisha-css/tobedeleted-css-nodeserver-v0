@@ -6,7 +6,7 @@ module.exports = async (to, template, params) => {
   logger.debug('Sending mail..');
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.EMAIL_SMTPSERVICE,
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD

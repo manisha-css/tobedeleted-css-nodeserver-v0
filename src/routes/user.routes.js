@@ -19,8 +19,8 @@ userRoutes.post('/changePassword', authService.validateAuthToken, errorHandler.w
 userRoutes.post('/myprofile', authService.validateAuthToken, errorHandler.wrapAsync(userCotroller.updateMyProfile));
 
 userRoutes.get('/:userId', errorHandler.wrapAsync(userCotroller.getUser));
-userRoutes.get('/basicuser/:userId', errorHandler.wrapAsync(userCotroller.getBasicUser));
-userRoutes.get('/', errorHandler.wrapAsync(userCotroller.getAllUsers));
+userRoutes.get('/basicuser/info', errorHandler.wrapAsync(userCotroller.getLoggedInUserBasicInfo));
+userRoutes.get('/', errorHandler.wrapAsync(userCotroller.getAllValidUsers));
 
 userRoutes.get('/online/all', errorHandler.wrapAsync(userCotroller.getOnlineUsers));
 module.exports = userRoutes;

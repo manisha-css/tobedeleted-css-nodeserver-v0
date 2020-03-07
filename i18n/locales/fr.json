@@ -1,4 +1,5 @@
 {
-  "healthcheck.ok": "French Healthcheck success",
-  "helpintro.success": "helpintro.success"
+	"healthcheck.ok": "French Healthcheck success",
+	"helpintro.success": "helpintro.success",
+	"login.sucess": "login.sucess"
 }
