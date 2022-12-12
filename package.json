@@ -22,7 +22,7 @@
     "cors": "^2.8.5",
     "ejs": "^2.7.1",
     "email-templates": "^6.0.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "http": "0.0.0",
     "i18n": "^0.8.4",
     "jsonwebtoken": "^8.5.1",
